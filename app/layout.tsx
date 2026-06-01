@@ -3,7 +3,7 @@ import { META } from "@/content/landing";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://playdate.vercel.app"),
+  metadataBase: new URL("https://playdate.world"),
   title: META.title,
   description: META.description,
   openGraph: {
