@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.DS_Store
+.env*.local
+.vercel
+next-env.d.ts
+
+# 개인 사진 원본 (배포·공개 제외, 로컬 백업용)
+design-assets/
+
+# 내부 문서·참고 자료 (공개 제외, 로컬 보존)
+design_handoff_buddy_landing/
+playdate_buddy_landing_PRD.md
+logo.png
+.claude/
