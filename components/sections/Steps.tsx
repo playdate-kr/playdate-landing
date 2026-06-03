@@ -1,170 +1,31 @@
-import type { ReactNode } from "react";
 import { Section, SectionKicker } from "@/components/Section";
-import { Photo, PHOTOS, type PhotoTone } from "@/components/Photo";
-import { Arrow, Flower, Sparkle, Star } from "@/components/Doodles";
+import { Photo } from "@/components/Photo";
 
-const Step = ({
-  num,
-  title,
-  body,
-  photoSrc,
-  photoNote,
-  tone,
-  doodle,
-  rotate = 0,
-}: {
-  num: string;
-  title: string;
-  body: string;
-  photoSrc: string;
-  photoNote: string;
-  tone: PhotoTone;
-  doodle?: ReactNode;
-  rotate?: number;
-}) => (
+const TextStep = ({ num, title, body }: { num: string; title: string; body: string }) => (
   <div className="relative">
-    <div
-      className="text-[44px] md:text-[80px] xl:text-[96px] font-black mb-2 md:mb-5"
-      style={{
-        lineHeight: 1,
-        letterSpacing: "-0.04em",
-        color: "var(--green-deep)",
-      }}
-    >
-      {num}
-    </div>
-
-    <div className="relative mb-4 xl:mb-7">
-      <Photo
-        src={photoSrc}
-        tone={tone}
-        note={photoNote}
-        className="w-full aspect-[16/9] md:aspect-[3/2] lg:aspect-[4/5]"
-        style={{
-          border: "2px solid var(--ink)",
-          transform: `rotate(${rotate}deg)`,
-          boxShadow: "8px 8px 0 var(--ink)",
-        }}
-      />
-      {doodle && (
-        <div className="absolute -top-7 -right-7 z-[3]">{doodle}</div>
-      )}
-    </div>
-
-    <h3
-      className="text-[24px] md:text-[26px] xl:text-[30px] font-black mb-3 xl:mb-3.5"
-      style={{
-        letterSpacing: "-0.03em",
-        color: "var(--ink)",
-      }}
-    >
-      {title}
-    </h3>
-    <p
-      className="text-[15px] xl:text-[16px] font-medium max-w-[320px]"
-      style={{
-        lineHeight: 1.65,
-        color: "var(--ink-soft)",
-      }}
-    >
-      {body}
-    </p>
+    <div className="text-[44px] md:text-[64px] xl:text-[80px] font-black mb-2 md:mb-4" style={{ lineHeight: 1, letterSpacing: "-0.04em", color: "var(--green-deep)" }}>{num}</div>
+    <h3 className="text-[22px] md:text-[24px] xl:text-[28px] font-black mb-2.5 xl:mb-3" style={{ letterSpacing: "-0.03em", lineHeight: 1.25, color: "var(--ink)" }}>{title}</h3>
+    <p className="text-[15px] xl:text-[16px] font-medium" style={{ lineHeight: 1.65, color: "var(--ink-soft)" }}>{body}</p>
   </div>
 );
 
 export const Steps = () => (
-  <Section
-    label="03-steps"
-    background="var(--bg-warm)"
-    borderTop
-    borderBottom
-    innerClassName="py-[48px] md:py-[80px] xl:py-[104px]"
-  >
-    {/* Heading row */}
-    <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-7 md:mb-14 xl:mb-[60px] gap-5 md:gap-14">
+  <Section label="02-steps" background="var(--bg-warm)" borderTop borderBottom innerClassName="py-[56px] md:py-[80px] xl:py-[96px]">
+    <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-8 md:mb-12 gap-5 md:gap-14">
       <div>
-        <div className="mb-4 md:mb-[18px]">
-          <SectionKicker index="03" label="버디가 하는 일" />
-        </div>
-        <h2
-          className="text-[40px] md:text-[56px] xl:text-[76px] font-black"
-          style={{
-            lineHeight: 0.96,
-            letterSpacing: "-0.04em",
-            color: "var(--ink)",
-          }}
-        >
-          세 가지로
-          <br />
-          <span style={{ color: "var(--green-deep)" }}>심플하게.</span>
+        <div className="mb-4 md:mb-[18px]"><SectionKicker index="02" label="버디가 하는 일" /></div>
+        <h2 className="text-[40px] md:text-[56px] xl:text-[72px] font-black" style={{ lineHeight: 0.96, letterSpacing: "-0.04em", color: "var(--ink)" }}>
+          하루동안<br /><span style={{ color: "var(--green-deep)" }}>우리는 친구예요.</span>
         </h2>
       </div>
-      <p
-        className="md:max-w-[340px] text-[15px] xl:text-[16px] font-medium"
-        style={{
-          lineHeight: 1.7,
-          color: "var(--ink-soft)",
-        }}
-      >
-        코스를 짜고, 정해진 시간 동안 함께하고, 깔끔하게 마무리합니다.
-        <br className="hidden md:inline" />그 이상도 그 이하도 아니에요.
-      </p>
     </div>
-
-    {/* Steps */}
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 xl:gap-[60px] relative">
-      <Step
-        num="01"
-        title="내 코스 짜기"
-        body="좋아하는 골목, 가게, 풍경을 한 두 시간짜리 산책 코스로 묶어요. 시간과 가격도 직접 정합니다."
-        photoSrc={PHOTOS.course1}
-        photoNote="장면 · 코스 노트, 지도"
-        tone="warm"
-        rotate={-2}
-        doodle={<Flower size={80} color="var(--pink)" center="#FFC93E" />}
-      />
-      <Step
-        num="02"
-        title="함께 걷기"
-        body="게스트와 약속한 시간에 만나, 짠 코스대로 같이 걷고 이야기합니다. 모든 곳은 사람이 있는 공개된 장소예요."
-        photoSrc={PHOTOS.course2}
-        photoNote="장면 · 함께 걷기"
-        tone="sage"
-        rotate={1.5}
-        doodle={<Sparkle size={48} color="var(--pink-hot)" />}
-      />
-      <Step
-        num="03"
-        title="깔끔하게 마무리"
-        body="정해진 시간이 끝나면 잘 인사하고 헤어집니다. 만남 이후의 사적 연락은 남기지 않아요."
-        photoSrc={PHOTOS.course3}
-        photoNote="장면 · 노을, 마무리"
-        tone="dusk"
-        rotate={-1}
-        doodle={<Star size={64} color="var(--green-soft)" />}
-      />
+    <div className="relative mb-10 md:mb-14 max-w-[820px] mx-auto">
+      <Photo src="/photos/steps.png" tone="warm" className="w-full aspect-[16/9]" style={{ border: "2px solid var(--ink)", boxShadow: "8px 8px 0 var(--ink)" }} />
     </div>
-
-    {/* Connecting arrows — desktop only */}
-    <div
-      className="hidden xl:block absolute z-[5]"
-      style={{
-        top: 480,
-        left: "calc(33.33% - 30px)",
-        transform: "translateX(-50%)",
-      }}
-    >
-      <Arrow width={90} color="var(--green-deep)" />
-    </div>
-    <div
-      className="hidden xl:block absolute z-[5]"
-      style={{
-        top: 480,
-        left: "calc(66.66% - 30px)",
-        transform: "translateX(-50%)",
-      }}
-    >
-      <Arrow width={90} color="var(--green-deep)" />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 xl:gap-[60px]">
+      <TextStep num="01" title="데이트 코스 짜기" body="방탈출, 코인 노래방, 러닝, 포켓몬 등 내 취미를 2~3시간 코스로 짜요." />
+      <TextStep num="02" title="신청 기다리기" body="금액을 정하고 내가 가능한 날짜에 게스트의 신청을 받아요." />
+      <TextStep num="03" title="하루동안 친구하기" body="게스트와 만나 즐거운 시간을 보내요." />
     </div>
   </Section>
 );
