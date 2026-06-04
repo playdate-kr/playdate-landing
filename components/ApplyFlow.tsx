@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useState, useEffect } from "react";
 import { Flower } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 const AF_STEPS = [
   { title: "기본 정보", desc: "먼저 당신을 알려주세요." },
@@ -48,7 +49,7 @@ export const ApplyFlow = () => {
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
 
   useEffect(() => {
-    const h = () => { setOpen(true); setStep(0); setDone(false); };
+    const h = () => { setOpen(true); setStep(0); setDone(false); track("apply_opened"); };
     window.addEventListener("open-apply", h);
     return () => window.removeEventListener("open-apply", h);
   }, []);
@@ -64,7 +65,10 @@ export const ApplyFlow = () => {
   ];
   const canNext = Boolean(valid[step]());
   const close = () => setOpen(false);
-  const next = () => { if (step < 3) setStep(step + 1); else setDone(true); };
+  const next = () => {
+    if (step < 3) { track("apply_step", { step: step + 1 }); setStep(step + 1); }
+    else { track("apply_submitted"); setDone(true); }
+  };
   const back = () => { if (step > 0) setStep(step - 1); };
 
   return (

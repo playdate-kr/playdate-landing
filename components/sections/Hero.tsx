@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { Photo } from "@/components/Photo";
 import { Flower, Squiggle } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 type BuddyMini = {
   name: string;
@@ -103,7 +104,7 @@ export const Hero = () => (
         <img src="/brand/wordmark.png" alt="플레이데이트" className="h-6 md:h-7 w-auto" />
         <a
           href="#cta"
-          onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("open-apply")); }}
+          onClick={(e) => { e.preventDefault(); track("cta_click", { location: "hero" }); window.dispatchEvent(new Event("open-apply")); }}
           className="inline-flex items-center gap-1.5 rounded-full text-[13px] md:text-[14px] font-extrabold"
           style={{ background: "var(--pink)", color: "var(--ink)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)", padding: "9px 16px" }}
         >

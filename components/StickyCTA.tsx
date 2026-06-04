@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { track } from "@/lib/analytics";
 
 type StickyCTAProps = { formUrl?: string };
 
@@ -16,7 +17,7 @@ export const StickyCTA = ({ formUrl = "#" }: StickyCTAProps) => {
   return (
     <a
       href={formUrl}
-      onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("open-apply")); }}
+      onClick={(e) => { e.preventDefault(); track("cta_click", { location: "sticky" }); window.dispatchEvent(new Event("open-apply")); }}
       className="sticky-cta"
       data-hidden={hidden}
       aria-label="신청서 작성하기"

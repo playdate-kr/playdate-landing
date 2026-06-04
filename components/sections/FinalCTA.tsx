@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { Flower, Heart, Sparkle, Squiggle, Star } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 type FinalCTAProps = { formUrl?: string };
 
@@ -20,7 +21,7 @@ export const FinalCTA = ({ formUrl = "#" }: FinalCTAProps) => (
       <div className="flex flex-wrap items-center gap-6 md:gap-10 mt-8 md:mt-10">
         <a
           href={formUrl}
-          onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("open-apply")); }}
+          onClick={(e) => { e.preventDefault(); track("cta_click", { location: "final" }); window.dispatchEvent(new Event("open-apply")); }}
           rel="noopener noreferrer"
           className="cta"
           style={{ background: "var(--ink)", color: "var(--paper)", fontSize: 18, padding: "18px 30px 18px 32px", boxShadow: "8px 8px 0 var(--green-deep)" }}
