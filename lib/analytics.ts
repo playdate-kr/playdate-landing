@@ -1,30 +1,43 @@
-import mixpanel from "mixpanel-browser";
-
 const TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
-let started = false;
 
-/**
- * Mixpanel 초기화. 토큰이 없으면(미설정) 아무 동작도 하지 않음(no-op).
- * 개인정보 보호: autocapture/페이지뷰 자동수집 끔 → 수동 track()만 전송.
- * (이름·연락처 등 폼 입력값은 절대 Mixpanel로 보내지 않음)
- */
-export function initAnalytics(): void {
-  if (started || !TOKEN || typeof window === "undefined") return;
-  mixpanel.init(TOKEN, {
-    autocapture: false,
-    track_pageview: false,
-    persistence: "localStorage",
-  } as unknown as Parameters<typeof mixpanel.init>[1]);
-  started = true;
+// mixpanel-browser를 지연 로딩(dynamic import)해서 메인 번들에서 분리.
+// → 초기 로딩 JS가 가벼워지고, 마운트 후 백그라운드로만 SDK를 받음.
+type MP = Awaited<typeof import("mixpanel-browser")>["default"];
+let mp: MP | null = null;
+let loadPromise: Promise<void> | null = null;
+
+function ensureLoaded(): Promise<void> {
+  if (!TOKEN || typeof window === "undefined") return Promise.resolve();
+  if (!loadPromise) {
+    loadPromise = import("mixpanel-browser")
+      .then((m) => {
+        m.default.init(TOKEN, {
+          autocapture: false,
+          track_pageview: false,
+          persistence: "localStorage",
+        } as unknown as Parameters<typeof m.default.init>[1]);
+        mp = m.default;
+      })
+      .catch(() => {
+        /* no-op */
+      });
+  }
+  return loadPromise;
 }
 
-/** 이벤트 전송. 토큰 없으면 no-op. props에는 개인정보를 넣지 말 것. */
+/** SDK 로딩 시작 (마운트 시 호출). 토큰 없으면 no-op. */
+export function initAnalytics(): void {
+  void ensureLoaded();
+}
+
+/** 이벤트 전송. SDK 로딩 완료 후 전송. 토큰 없으면 no-op. props에 개인정보 금지. */
 export function track(event: string, props?: Record<string, unknown>): void {
   if (!TOKEN || typeof window === "undefined") return;
-  if (!started) initAnalytics();
-  try {
-    mixpanel.track(event, props);
-  } catch {
-    /* no-op */
-  }
+  void ensureLoaded().then(() => {
+    try {
+      mp?.track(event, props);
+    } catch {
+      /* no-op */
+    }
+  });
 }
