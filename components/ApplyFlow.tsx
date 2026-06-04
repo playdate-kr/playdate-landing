@@ -45,6 +45,8 @@ export const ApplyFlow = () => {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [f, setF] = useState<FormState>({ name: "", contact: "", region: "", regionEtc: "", intro: "", course: "", etc: "", consent: false });
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
 
@@ -65,9 +67,28 @@ export const ApplyFlow = () => {
   ];
   const canNext = Boolean(valid[step]());
   const close = () => setOpen(false);
+  const submit = async () => {
+    setSubmitting(true);
+    setSubmitError(false);
+    try {
+      const res = await fetch("/api/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(f),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      track("apply_submitted");
+      setDone(true);
+    } catch {
+      track("apply_submit_error");
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
   const next = () => {
     if (step < 3) { track("apply_step", { step: step + 1 }); setStep(step + 1); }
-    else { track("apply_submitted"); setDone(true); }
+    else void submit();
   };
   const back = () => { if (step > 0) setStep(step - 1); };
 
@@ -151,11 +172,16 @@ export const ApplyFlow = () => {
               )}
             </div>
 
-            <div className="flex items-center justify-between" style={{ marginTop: 28, gap: 16 }}>
-              {step > 0 ? <button className="af-backbtn" onClick={back}>← 이전</button> : <span />}
-              <button className="af-nextbtn" onClick={next} disabled={!canNext}>
-                <span>{step < 3 ? "다음" : "신청서 제출하기"}</span>
-                <span style={{ fontSize: 18 }}>→</span>
+            {submitError && (
+              <p style={{ marginTop: 18, fontSize: 14, fontWeight: 700, color: "var(--pink-hot)", textAlign: "center" }}>
+                제출에 실패했어요. 잠시 후 다시 시도해주세요.
+              </p>
+            )}
+            <div className="flex items-center justify-between" style={{ marginTop: submitError ? 12 : 28, gap: 16 }}>
+              {step > 0 ? <button className="af-backbtn" onClick={back} disabled={submitting}>← 이전</button> : <span />}
+              <button className="af-nextbtn" onClick={next} disabled={!canNext || submitting}>
+                <span>{submitting ? "제출 중…" : step < 3 ? "다음" : "신청서 제출하기"}</span>
+                {!submitting && <span style={{ fontSize: 18 }}>→</span>}
               </button>
             </div>
           </>
