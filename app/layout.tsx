@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: META.title,
     description: META.description,
-    images: [META.ogImage],
+    siteName: "플레이데이트",
+    images: [{ url: META.ogImage, width: 1200, height: 630, alt: META.title }],
     type: "website",
     locale: "ko_KR",
   },
