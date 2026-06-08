@@ -22,8 +22,10 @@ export const SafetyRules = () => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 xl:gap-x-[80px]" style={{ borderBottom: "1.5px solid rgba(244,239,230,0.3)" }}>
       <SafeItem no="01" title="공개된 일반 장소에서만" body="카페·골목·공원·전시장 등 사람이 있는 곳에서만. 룸·자택·차량 이동은 허용되지 않아요." />
-      <SafeItem no="02" title="게스트도 본인 인증 필수!" body="버디는 물론, 게스트도 신분증 기반 본인 인증을 마친 뒤에만 만남이 성사돼요." />
-      <SafeItem no="03" title="문제 발생 시 즉시 지원" body="신체 접촉 등 불편한 상황이 발생하면 즉시 차단 기능이 제공돼요." />
+      <SafeItem no="02" title="운영자 면접·신원 확인 후 등록" body="지원서 → 1:1 면접(온라인) → 신분증 기반 신원 확인을 거친 분만 등록돼요. 게스트도 본인 인증 필수예요." />
+      <SafeItem no="03" title="문제 발생 시 즉시 개입" body="불편한 상황이 생기면 운영자가 곧바로 개입해요. 24시간 카톡 채널 운영." />
+      <SafeItem no="04" title="신체 접촉은 없어요" body="플레이데이트는 신체 접촉이 없는 만남이에요." />
+      <SafeItem no="05" title="만남 이후 사적인 연락은 하지 않아요" body="정해진 시간이 끝나면 깔끔하게 마무리해요. 개인 번호 교환은 하지 않아요." />
     </div>
     <div className="hidden md:block bobble slow absolute" style={{ top: 80, right: 80, "--r": "14deg" } as CSSProperties}>
       <Star size={56} color="var(--pink)" />
