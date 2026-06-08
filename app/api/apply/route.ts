@@ -64,8 +64,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "db_error" }, { status: 500 });
   }
 
-  // 슬랙 알림 (best-effort — 실패해도 신청 저장은 성공으로 응답)
-  const slack = await notifySlack({
+  // 슬랙 알림 (best-effort — 실패해도 신청 저장은 성공으로 응답, 실패 시 로그만)
+  await notifySlack({
     name,
     contact,
     region: regionStr,
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     etc: s(body.etc, 4000),
   });
 
-  return NextResponse.json({ ok: true, slack });
+  return NextResponse.json({ ok: true });
 }
 
 async function notifySlack(d: {
