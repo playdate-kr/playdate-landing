@@ -20,7 +20,7 @@ const AF_REGIONS = [
 type FormState = {
   name: string;
   contact: string;
-  region: string;
+  regions: string[];
   regionEtc: string;
   intro: string;
   course: string;
@@ -47,7 +47,7 @@ export const ApplyFlow = () => {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
-  const [f, setF] = useState<FormState>({ name: "", contact: "", region: "", regionEtc: "", intro: "", course: "", etc: "", consent: false });
+  const [f, setF] = useState<FormState>({ name: "", contact: "", regions: [], regionEtc: "", intro: "", course: "", etc: "", consent: false });
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const ApplyFlow = () => {
 
   const valid: Array<() => boolean | string> = [
     () => f.name.trim() !== "" && f.contact.trim() !== "",
-    () => f.region.trim() !== "" && (f.region !== "기타" || f.regionEtc.trim() !== "") && f.intro.trim() !== "",
+    () => f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== "") && f.intro.trim() !== "",
     () => f.course.trim() !== "",
     () => f.consent,
   ];
@@ -136,13 +136,13 @@ export const ApplyFlow = () => {
               )}
               {step === 1 && (
                 <>
-                  <AfField label="희망 활동 지역" required hint="주로 활동하고 싶은 동네를 골라주세요.">
+                  <AfField label="희망 활동 지역" required hint="여러 개 선택할 수 있어요.">
                     <div className="flex flex-wrap gap-2.5">
                       {AF_REGIONS.map((r) => (
-                        <button key={r} type="button" className="af-chip" data-on={f.region === r} onClick={() => set("region", r)}>{r}</button>
+                        <button key={r} type="button" className="af-chip" data-on={f.regions.includes(r)} onClick={() => setF((p) => ({ ...p, regions: p.regions.includes(r) ? p.regions.filter((x) => x !== r) : [...p.regions, r] }))}>{r}</button>
                       ))}
                     </div>
-                    {f.region === "기타" && (
+                    {f.regions.includes("기타") && (
                       <input className="af-input" style={{ marginTop: 12 }} value={f.regionEtc} onChange={(e) => set("regionEtc", e.target.value)} placeholder="활동 희망 지역을 직접 입력해주세요" autoFocus />
                     )}
                   </AfField>
