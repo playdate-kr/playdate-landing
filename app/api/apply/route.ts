@@ -65,16 +65,16 @@ export async function POST(req: Request) {
   }
 
   // 슬랙 알림 (best-effort — 실패해도 신청 저장은 성공으로 응답)
-  await notifySlack({
+  const slack = await notifySlack({
     name,
     contact,
     region: regionStr,
     intro,
     course,
     etc: s(body.etc, 4000),
-  }).catch(() => {});
+  });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, slack });
 }
 
 async function notifySlack(d: {
@@ -84,9 +84,12 @@ async function notifySlack(d: {
   intro: string;
   course: string;
   etc: string;
-}) {
+}): Promise<string> {
   const url = process.env.SLACK_WEBHOOK_URL;
-  if (!url) return;
+  if (!url) {
+    console.error("[slack] SLACK_WEBHOOK_URL not set in runtime");
+    return "no_url";
+  }
   const lines = [
     "🌷 *새 버디 신청이 들어왔어요!*",
     `• 이름: ${d.name}`,
@@ -96,9 +99,17 @@ async function notifySlack(d: {
     `• 코스: ${d.course}`,
   ];
   if (d.etc) lines.push(`• 건의사항: ${d.etc}`);
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: lines.join("\n") }),
-  });
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: lines.join("\n") }),
+    });
+    const txt = await res.text().catch(() => "");
+    if (!res.ok) console.error("[slack] webhook failed:", res.status, txt);
+    return `${res.status}:${txt}`.slice(0, 80);
+  } catch (e) {
+    console.error("[slack] notify error:", (e as Error)?.message);
+    return "throw:" + String((e as Error)?.message || "?").slice(0, 60);
+  }
 }
