@@ -65,7 +65,7 @@ const BuddyMiniCard = ({ b }: { b: BuddyMini }) => (
       }}
     >
       <div
-        className="absolute bottom-2.5 left-2.5 right-2.5 z-[2] rounded-lg px-3 py-2"
+        className="absolute bottom-2.5 left-2.5 right-2.5 z-[2] rounded-lg px-2.5 md:px-3 py-1.5 md:py-2"
         style={{ background: "var(--paper)", border: "1.5px solid var(--ink)", boxShadow: "2px 2px 0 var(--ink)" }}
       >
         <div className="flex items-baseline gap-1.5">
@@ -73,23 +73,27 @@ const BuddyMiniCard = ({ b }: { b: BuddyMini }) => (
           <span className="text-[15px] md:text-[17px] font-black" style={{ color: b.nameColor, letterSpacing: "-0.03em" }}>{b.name}</span>
         </div>
         <div className="hidden md:block text-[12px] md:text-[13px] font-bold mt-1" style={{ color: "var(--ink)", letterSpacing: "-0.01em", lineHeight: 1.4 }}>{b.proposal}</div>
-        <div className="flex items-center gap-1.5 mt-1.5 text-[11px] md:text-[12px] font-bold" style={{ color: "var(--ink-soft)" }}>
+        <div className="flex items-center gap-1.5 mt-1 md:mt-1.5 text-[11px] md:text-[12px] font-bold" style={{ color: "var(--ink-soft)" }}>
           <span>{b.region}</span>
           <span style={{ opacity: 0.45 }}>·</span>
           <span style={{ color: "var(--pink-hot)" }}>★</span>
           <span style={{ color: "var(--ink)" }}>{b.rating}</span>
           <span style={{ fontWeight: 600, opacity: 0.7 }}>({b.reviews})</span>
         </div>
-        <div className="flex flex-wrap gap-1 mt-1.5">
+        {/* 태그: 모바일은 한 줄(2개 + "+N"), 데스크탑은 전체 */}
+        <div className="flex flex-nowrap md:flex-wrap items-center gap-1 mt-1 md:mt-1.5 overflow-hidden">
           {b.tags.map((t, i) => (
             <span
               key={i}
-              className="rounded px-1.5 py-0.5 text-[9px] md:text-[11px] font-bold"
+              className={`${i >= 2 ? "hidden md:inline-block" : ""} shrink-0 whitespace-nowrap rounded px-1.5 py-0.5 text-[9px] md:text-[11px] font-bold`}
               style={{ background: "var(--bg-warm)", border: "1px solid var(--ink)", color: "var(--ink-soft)" }}
             >
               #{t}
             </span>
           ))}
+          {b.tags.length > 2 && (
+            <span className="md:hidden shrink-0 text-[9px] font-bold" style={{ color: "var(--ink-soft)", opacity: 0.85 }}>+{b.tags.length - 2}</span>
+          )}
         </div>
       </div>
     </Photo>
