@@ -28,7 +28,7 @@ const BUDDIES: Buddy[] = [
 const BuddyCard = ({ b }: { b: Buddy }) => (
   <div className="snap-start shrink-0 w-[284px] md:w-[342px] flex flex-col" style={{ background: "var(--paper)", border: "2px solid var(--ink)", borderRadius: 8, boxShadow: "6px 6px 0 var(--ink)", overflow: "hidden" }}>
     <div className="relative">
-      <Photo src={b.photoSrc} tone={b.tone} style={{ width: "100%", aspectRatio: "4 / 5", backgroundPosition: b.pos, borderBottom: "2px solid var(--ink)" }}>
+      <Photo src={b.photoSrc} alt={`${b.name} 버디`} tone={b.tone} objectPosition={b.pos} sizes="(max-width: 768px) 284px, 342px" style={{ width: "100%", aspectRatio: "4 / 5", borderBottom: "2px solid var(--ink)" }}>
         {!b.photoSrc && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="rounded-full px-3 py-1.5 text-[12px] font-bold" style={{ background: "rgba(20,20,20,0.5)", color: "var(--paper)", backdropFilter: "blur(2px)" }}>사진 준비중</span>

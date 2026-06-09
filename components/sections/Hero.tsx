@@ -52,13 +52,16 @@ const BuddyMiniCard = ({ b }: { b: BuddyMini }) => (
   <div className="flex flex-col" style={{ transform: `rotate(${b.rotate}deg)` }}>
     <Photo
       src={b.src}
+      alt={`${b.name} 버디`}
       tone={b.tone}
+      objectPosition={b.pos}
+      priority
+      sizes="(max-width: 768px) 45vw, 260px"
       className="w-full aspect-[3/4]"
       style={{
         border: "2px solid var(--ink)",
         borderRadius: 6,
         boxShadow: "6px 6px 0 var(--ink)",
-        backgroundPosition: b.pos,
       }}
     >
       <div

@@ -68,15 +68,6 @@
       radial-gradient(80% 60% at 80% 90%, rgba(20,10,30,0.3), transparent 60%),
       linear-gradient(135deg, #C9A8B5 0%, #9D7E92 55%, #6D5A78 100%);
   }
-  .photo::after {
-    content: '';
-    position: absolute; inset: 0;
-    background-image:
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0 1px, transparent 1px 3px),
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 3px);
-    mix-blend-mode: overlay;
-    pointer-events: none;
-  }
   .photo-note {
     position: absolute;
     z-index: 2;

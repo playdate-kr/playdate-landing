@@ -20,7 +20,7 @@ export const Steps = () => (
       </div>
     </div>
     <div className="relative mb-10 md:mb-14 max-w-[820px] mx-auto">
-      <Photo src="/photos/steps.png" tone="warm" className="w-full aspect-[16/9]" style={{ border: "2px solid var(--ink)", boxShadow: "8px 8px 0 var(--ink)" }} />
+      <Photo src="/photos/steps.png" alt="버디 활동 예시 화면" tone="warm" sizes="(max-width: 820px) 100vw, 820px" className="w-full aspect-[16/9]" style={{ border: "2px solid var(--ink)", boxShadow: "8px 8px 0 var(--ink)" }} />
     </div>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 xl:gap-[60px]">
       <TextStep num="01" title="데이트 코스 짜기" body="방탈출, 코인 노래방, 러닝, 포켓몬 등 내 취미를 2~3시간 코스로 짜요." />
