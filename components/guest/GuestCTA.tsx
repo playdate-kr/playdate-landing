@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { Flower, Squiggle, Star } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 export const GuestCTA = () => (
   <section id="beta-cta" data-screen-label="05-cta" style={{ position: "relative", width: "100%", background: "var(--pink)", color: "var(--ink)", borderTop: "1.5px solid var(--ink)", overflow: "hidden" }}>
@@ -12,7 +13,7 @@ export const GuestCTA = () => (
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 32, marginTop: 44 }}>
         <a
           href="#"
-          onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("open-beta")); }}
+          onClick={(e) => { e.preventDefault(); track("cta_click", { location: "final", page: "guest" }); window.dispatchEvent(new Event("open-beta")); }}
           className="cta"
           style={{ background: "var(--ink)", color: "var(--paper)", fontSize: 18, padding: "18px 30px 18px 32px", boxShadow: "8px 8px 0 var(--green-deep)" }}
         >

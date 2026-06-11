@@ -6,7 +6,8 @@ import { initAnalytics, track } from "@/lib/analytics";
 export default function Analytics() {
   useEffect(() => {
     initAnalytics();
-    track("page_view", { page: "landing" });
+    const page = window.location.pathname.startsWith("/buddy") ? "buddy" : "guest";
+    track("page_view", { page });
   }, []);
   return null;
 }

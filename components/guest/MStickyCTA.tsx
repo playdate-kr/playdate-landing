@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { track } from "@/lib/analytics";
 
 export const MStickyCTA = () => {
   const [hidden, setHidden] = useState(true);
@@ -27,7 +28,7 @@ export const MStickyCTA = () => {
     return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
   }, []);
   return (
-    <a href="#" className="m-sticky" data-hidden={hidden} onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("open-beta")); }}>
+    <a href="#" className="m-sticky" data-hidden={hidden} onClick={(e) => { e.preventDefault(); track("cta_click", { location: "sticky", page: "guest" }); window.dispatchEvent(new Event("open-beta")); }}>
       <span>데이트 신청하기</span>
       <span style={{ width: 26, height: 26, borderRadius: 999, background: "var(--ink)", color: "var(--pink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>→</span>
     </a>

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Flower, Sparkle } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 type FormState = {
   name: string;
@@ -29,7 +30,7 @@ export const BetaApply = () => {
   const touch = (k: keyof FormState) => setTouched((p) => ({ ...p, [k]: true }));
 
   useEffect(() => {
-    const h = () => { setOpen(true); setDone(false); };
+    const h = () => { setOpen(true); setDone(false); track("beta_opened"); };
     window.addEventListener("open-beta", h);
     return () => window.removeEventListener("open-beta", h);
   }, []);
@@ -73,8 +74,10 @@ export const BetaApply = () => {
         body: JSON.stringify(f),
       });
       if (!res.ok) throw new Error(String(res.status));
+      track("beta_submitted");
       setDone(true);
     } catch {
+      track("beta_submit_error");
       setSubmitError(true);
     } finally {
       setSubmitting(false);

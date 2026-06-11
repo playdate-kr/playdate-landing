@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { Flower, Squiggle } from "@/components/Doodles";
+import { track } from "@/lib/analytics";
 
 type ApplyCardProps = {
   src: string;
@@ -29,6 +30,7 @@ const BuddyApplyCard = ({ src, pos, name, color, rating, msg, delay }: ApplyCard
 
 const openBeta = (e: React.MouseEvent) => {
   e.preventDefault();
+  track("cta_click", { location: "hero", page: "guest" });
   window.dispatchEvent(new Event("open-beta"));
 };
 
