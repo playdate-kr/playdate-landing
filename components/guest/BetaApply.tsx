@@ -21,6 +21,8 @@ const BUDGETS = ["2만원대", "3만원대", "4만원대", "5만원 이상", "�
 export const BetaApply = () => {
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [touched, setTouched] = useState<Touched>({});
   const [f, setF] = useState<FormState>({ name: "", phone: "", wish: "", budget: "", adult: false, consent: false, nickname: "" });
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
@@ -57,12 +59,25 @@ export const BetaApply = () => {
     </label>
   );
 
-  const submit = () => {
-    if (canSubmit) {
-      // TODO: 실제 전송 로직 연결 (API/시트/메일). 폼 값은 f 객체에 모두 있음.
-      setDone(true);
-    } else {
+  const submit = async () => {
+    if (!canSubmit) {
       setTouched({ name: true, phone: true, wish: true, budget: true, adult: true, consent: true });
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError(false);
+    try {
+      const res = await fetch("/api/beta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(f),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setDone(true);
+    } catch {
+      setSubmitError(true);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -130,13 +145,15 @@ export const BetaApply = () => {
 
             <button
               className="cta"
-              disabled={!canSubmit}
+              disabled={!canSubmit || submitting}
               onClick={submit}
-              style={{ width: "100%", justifyContent: "center", marginTop: 28, fontSize: 17, padding: "17px 22px", opacity: canSubmit ? 1 : 0.45, cursor: canSubmit ? "pointer" : "not-allowed", border: "2px solid var(--ink)" }}
+              style={{ width: "100%", justifyContent: "center", marginTop: 28, fontSize: 17, padding: "17px 22px", opacity: (canSubmit && !submitting) ? 1 : 0.45, cursor: (canSubmit && !submitting) ? "pointer" : "not-allowed", border: "2px solid var(--ink)" }}
             >
-              <span style={{ whiteSpace: "nowrap" }}>베타 신청 완료하기</span><span className="arrow" style={{ width: 28, height: 28, fontSize: 14 }}>→</span>
+              <span style={{ whiteSpace: "nowrap" }}>{submitting ? "신청 중…" : "베타 신청 완료하기"}</span>
+              {!submitting && <span className="arrow" style={{ width: 28, height: 28, fontSize: 14 }}>→</span>}
             </button>
-            {!canSubmit && <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink-soft)", textAlign: "center", marginTop: 12 }}>필수 항목을 채우면 신청할 수 있어요</p>}
+            {submitError && <p style={{ fontSize: 12.5, fontWeight: 700, color: "var(--pink-hot)", textAlign: "center", marginTop: 12 }}>제출에 실패했어요. 잠시 후 다시 시도해주세요.</p>}
+            {!canSubmit && !submitError && <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink-soft)", textAlign: "center", marginTop: 12 }}>필수 항목을 채우면 신청할 수 있어요</p>}
           </>
         )}
       </div>
