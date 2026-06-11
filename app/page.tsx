@@ -1,25 +1,23 @@
-import Hero from "@/components/sections/Hero";
-import Steps from "@/components/sections/Steps";
-import Buddies from "@/components/sections/Buddies";
-import Criteria from "@/components/sections/Criteria";
-import Rewards from "@/components/sections/Rewards";
-import SafetyRules from "@/components/sections/SafetyRules";
-import FinalCTA from "@/components/sections/FinalCTA";
-import StickyCTA from "@/components/StickyCTA";
-import ApplyFlow from "@/components/ApplyFlow";
+import GuestHero from "@/components/guest/GuestHero";
+import BuddyProfiles from "@/components/guest/BuddyProfiles";
+import HowItWorks from "@/components/guest/HowItWorks";
+import GuestRules from "@/components/guest/GuestRules";
+import Faq from "@/components/guest/Faq";
+import GuestCTA from "@/components/guest/GuestCTA";
+import BetaApply from "@/components/guest/BetaApply";
+import MStickyCTA from "@/components/guest/MStickyCTA";
 
 export default function Page() {
   return (
-    <main>
-      <Hero />
-      <Steps />
-      <Buddies />
-      <Criteria />
-      <Rewards />
-      <SafetyRules />
-      <FinalCTA />
-      <StickyCTA />
-      <ApplyFlow />
+    <main className="guest">
+      <GuestHero />
+      <BuddyProfiles />
+      <HowItWorks />
+      <GuestRules />
+      <Faq />
+      <GuestCTA />
+      <BetaApply />
+      <MStickyCTA />
     </main>
   );
 }

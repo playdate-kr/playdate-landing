@@ -6,6 +6,15 @@
  * 직접 수정해주세요.
  */
 
+// 루트(/) = Guest 랜딩 (주 페이지)
+export const META_GUEST = {
+  title: "플레이데이트 — 가끔은 10년 친구보다, 하루 친구",
+  description:
+    "원하는 데이트를 올리면, 검증된 버디가 하루 친구가 되어드려요. 지금 베타 신청 받는 중.",
+  ogImage: "/og.png", // TODO: 게스트 전용 OG 이미지 (현재는 버디용 재사용)
+};
+
+// /buddy = 버디 모집 랜딩
 export const META = {
   title: "플레이데이트 — 당신의 하루를 빌려줄래요?",
   description:
