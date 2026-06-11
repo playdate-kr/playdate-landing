@@ -39,9 +39,7 @@ export const GuestHero = () => (
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 40 }}>
         <img src="/brand/wordmark.png" alt="플레이데이트" style={{ height: 28, width: "auto" }} />
         <div className="hero-nav" style={{ display: "flex", gap: 28, alignItems: "center", fontSize: 14, fontWeight: 600, color: "var(--ink-soft)" }}>
-          <span>예측 가능한 만남</span>
-          <span>버디 소개</span>
-          <a href="/buddy" className="ghost-link" style={{ fontSize: 14 }}>버디로 활동하기 →</a>
+          <a href="/buddy" className="ghost-link" style={{ fontSize: 14 }}>버디 등록하기 →</a>
         </div>
       </div>
 
