@@ -1,5 +1,6 @@
 import { Section, Kicker } from "@/components/guest/GuestSection";
 import { Sparkle } from "@/components/Doodles";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 
 const SelectCard = () => (
@@ -72,9 +73,9 @@ const DetailPanel = () => (
           <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ink-soft)", whiteSpace: "nowrap" }}>3시간 · <span style={{ color: "var(--pink-hot)", fontWeight: 800 }}>8만원</span></span>
         </div>
       </div>
-      <a href="#" className="cta" style={{ width: "100%", justifyContent: "center", fontSize: 15, padding: "13px 18px", boxShadow: "4px 4px 0 var(--ink)", marginTop: 12, boxSizing: "border-box" }}>
-        <span>오픈 날짜 보러가기</span><span className="arrow" style={{ width: 26, height: 26, fontSize: 13 }}>→</span>
-      </a>
+      <Link href="/buddies/ian" className="cta" style={{ width: "100%", justifyContent: "center", fontSize: 15, padding: "13px 18px", boxShadow: "4px 4px 0 var(--ink)", marginTop: 12, boxSizing: "border-box" }}>
+        <span>이안 프로필 보기</span><span className="arrow" style={{ width: 26, height: 26, fontSize: 13 }}>→</span>
+      </Link>
     </div>
   </div>
 );

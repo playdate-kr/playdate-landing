@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { Flower, Squiggle } from "@/components/Doodles";
 import { track } from "@/lib/analytics";
+import Link from "next/link";
 
 type ApplyCardProps = {
   src: string;
@@ -28,12 +29,6 @@ const BuddyApplyCard = ({ src, pos, name, color, rating, msg, delay }: ApplyCard
   </div>
 );
 
-const openBeta = (e: React.MouseEvent) => {
-  e.preventDefault();
-  track("cta_click", { location: "hero", page: "guest" });
-  window.dispatchEvent(new Event("open-beta"));
-};
-
 export const GuestHero = () => (
   <section data-screen-label="01-hero" className="hero" style={{ position: "relative", width: "100%", minHeight: "92vh", background: "var(--bg)", overflow: "hidden" }}>
     <div style={{ position: "relative", margin: "0 auto", width: "100%", maxWidth: 1440, padding: "40px 80px 64px" }}>
@@ -53,7 +48,7 @@ export const GuestHero = () => (
             가끔은<br />10년 친구보다,<br /><span style={{ color: "var(--pink-hot)" }}>하루 친구.</span>
           </h1>
           <div id="hero-cta" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 24, marginTop: 36 }}>
-            <a href="#" onClick={openBeta} className="cta"><span>데이트 신청하기</span><span className="arrow">→</span></a>
+            <Link href="/buddies" onClick={() => track("cta_click", { location: "hero", page: "guest" })} className="cta"><span>데이트 신청하기</span><span className="arrow">→</span></Link>
             <span style={{ fontSize: 14, fontWeight: 700, color: "var(--ink-soft)", whiteSpace: "nowrap" }}>약 30초 소요</span>
           </div>
         </div>

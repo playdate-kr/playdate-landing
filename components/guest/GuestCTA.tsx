@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import { Flower, Squiggle, Star } from "@/components/Doodles";
 import { track } from "@/lib/analytics";
+import Link from "next/link";
 
 export const GuestCTA = () => (
   <section id="beta-cta" data-screen-label="05-cta" style={{ position: "relative", width: "100%", background: "var(--pink)", color: "var(--ink)", borderTop: "1.5px solid var(--ink)", overflow: "hidden" }}>
@@ -11,15 +12,15 @@ export const GuestCTA = () => (
         당신의 첫번째<br /><span style={{ display: "inline-block", marginTop: 8, padding: "0 20px", background: "var(--paper)", color: "var(--ink)" }}>하루 친구</span>를<br />만나보세요.
       </h2>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 32, marginTop: 44 }}>
-        <a
-          href="#"
-          onClick={(e) => { e.preventDefault(); track("cta_click", { location: "final", page: "guest" }); window.dispatchEvent(new Event("open-beta")); }}
+        <Link
+          href="/buddies"
+          onClick={() => track("cta_click", { location: "final", page: "guest" })}
           className="cta"
           style={{ background: "var(--ink)", color: "var(--paper)", fontSize: 18, padding: "18px 30px 18px 32px", boxShadow: "8px 8px 0 var(--green-deep)" }}
         >
           <span>데이트 신청하기</span>
           <span className="arrow" style={{ background: "var(--pink-hot)", color: "var(--ink)", width: 36, height: 36, fontSize: 18 }}>→</span>
-        </a>
+        </Link>
         <span style={{ fontSize: 14, fontWeight: 700, color: "var(--green-deep)" }}>약 30초 소요</span>
       </div>
       <div className="bobble" style={{ position: "absolute", top: 80, right: 90, "--r": "12deg" } as CSSProperties}><Flower size={116} color="var(--paper)" center="var(--green)" /></div>
