@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { Photo } from "@/components/Photo";
 import { Flower, Squiggle } from "@/components/Doodles";
 import { track } from "@/lib/analytics";
+import Link from "next/link";
 
 type BuddyMini = {
   name: string;
@@ -107,16 +108,19 @@ export const Hero = () => (
     style={{ background: "var(--bg)" }}
   >
     <div className="relative mx-auto w-full max-w-page px-5 md:px-12 xl:px-20 pt-[40px] md:pt-[48px] pb-[56px] xl:pb-[64px]">
-      <div className="flex justify-between items-center mb-8 md:mb-10">
-        <img src="/brand/wordmark.png" alt="플레이데이트" className="h-6 md:h-7 w-auto" />
-        <a
-          href="#cta"
-          onClick={(e) => { e.preventDefault(); track("cta_click", { location: "hero" }); window.dispatchEvent(new Event("open-apply")); }}
-          className="inline-flex items-center gap-1.5 rounded-full text-[13px] md:text-[14px] font-extrabold"
-          style={{ background: "var(--pink)", color: "var(--ink)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)", padding: "9px 16px" }}
-        >
-          신청하기 <span>→</span>
-        </a>
+      <div className="flex justify-between items-center gap-3 mb-8 md:mb-10">
+        <img src="/brand/wordmark.png" alt="플레이데이트" className="h-6 md:h-7 w-auto shrink-0" />
+        <div className="flex items-center gap-2.5 md:gap-4">
+          <Link href="/" className="text-[12px] md:text-[14px] font-bold whitespace-nowrap" style={{ color: "var(--ink-soft)" }}>게스트로 둘러보기 →</Link>
+          <a
+            href="#cta"
+            onClick={(e) => { e.preventDefault(); track("cta_click", { location: "hero" }); window.dispatchEvent(new Event("open-apply")); }}
+            className="inline-flex items-center gap-1.5 rounded-full text-[13px] md:text-[14px] font-extrabold whitespace-nowrap shrink-0"
+            style={{ background: "var(--pink)", color: "var(--ink)", border: "2px solid var(--ink)", boxShadow: "3px 3px 0 var(--ink)", padding: "9px 16px" }}
+          >
+            버디 등록하기 <span>→</span>
+          </a>
+        </div>
       </div>
       <div className="flex flex-col xl:grid xl:grid-cols-[540px_1fr] gap-10 xl:gap-[60px] items-start xl:items-center">
         <div className="w-full xl:order-2 xl:pt-[20px]">

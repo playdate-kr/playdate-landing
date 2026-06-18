@@ -26,11 +26,11 @@ export const FinalCTA = ({ formUrl = "#" }: FinalCTAProps) => (
           className="cta"
           style={{ background: "var(--ink)", color: "var(--paper)", fontSize: 18, padding: "18px 30px 18px 32px", boxShadow: "8px 8px 0 var(--green-deep)" }}
         >
-          <span>신청서 작성하기</span>
+          <span>버디 등록하기</span>
           <span className="arrow" style={{ background: "var(--pink-hot)", color: "var(--ink)", width: 36, height: 36, fontSize: 18 }}>→</span>
         </a>
         <div className="text-[13px] md:text-[14px] xl:text-[15px] font-bold" style={{ color: "var(--green-deep)", lineHeight: 1.6 }}>
-          신청 약 3분 소요
+          신청 약 1분 소요
         </div>
       </div>
       <div className="hidden md:block bobble absolute" style={{ top: 80, right: 80, "--r": "12deg" } as CSSProperties}><Flower size={120} color="var(--paper)" center="var(--green)" /></div>
