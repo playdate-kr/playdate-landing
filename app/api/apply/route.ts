@@ -9,9 +9,7 @@ type Body = {
   contact?: string;
   regions?: string[];
   regionEtc?: string;
-  intro?: string;
-  course?: string;
-  etc?: string;
+  hobby?: string;
   consent?: boolean;
 };
 
@@ -40,11 +38,10 @@ export async function POST(req: Request) {
   const regionEtc = s(body.regionEtc, 100);
   const hasEtc = regions.includes("기타");
   const regionStr = regions.map((r) => (r === "기타" ? regionEtc || "기타" : r)).join(", ").slice(0, 300);
-  const intro = s(body.intro, 300);
-  const course = s(body.course, 4000);
+  const hobby = s(body.hobby, 4000);
 
   // 필수값 검증 (폼과 동일 기준)
-  if (!name || !contact || regions.length === 0 || (hasEtc && !regionEtc) || !intro || !course || body.consent !== true) {
+  if (!name || !contact || regions.length === 0 || (hasEtc && !regionEtc) || !hobby || body.consent !== true) {
     return NextResponse.json({ ok: false, error: "invalid" }, { status: 400 });
   }
 
@@ -53,9 +50,9 @@ export async function POST(req: Request) {
     contact,
     region: regionStr,
     region_etc: hasEtc ? regionEtc || null : null,
-    intro,
-    course,
-    etc: s(body.etc, 4000) || null,
+    intro: hobby,
+    course: "",
+    etc: null,
     consent: true,
   });
 
@@ -69,9 +66,7 @@ export async function POST(req: Request) {
     name,
     contact,
     region: regionStr,
-    intro,
-    course,
-    etc: s(body.etc, 4000),
+    hobby,
   });
 
   return NextResponse.json({ ok: true });
@@ -81,9 +76,7 @@ async function notifySlack(d: {
   name: string;
   contact: string;
   region: string;
-  intro: string;
-  course: string;
-  etc: string;
+  hobby: string;
 }): Promise<string> {
   const url = process.env.SLACK_WEBHOOK_URL;
   if (!url) {
@@ -95,10 +88,8 @@ async function notifySlack(d: {
     `• 이름: ${d.name}`,
     `• 연락처: ${d.contact}`,
     `• 지역: ${d.region}`,
-    `• 한 줄 소개: ${d.intro}`,
-    `• 코스: ${d.course}`,
+    `• 희망 취미: ${d.hobby}`,
   ];
-  if (d.etc) lines.push(`• 건의사항: ${d.etc}`);
   try {
     const res = await fetch(url, {
       method: "POST",

@@ -6,10 +6,8 @@ import { Flower } from "@/components/Doodles";
 import { track } from "@/lib/analytics";
 
 const AF_STEPS = [
-  { title: "기본 정보", desc: "먼저 당신을 알려주세요." },
-  { title: "버디 활동", desc: "어디서, 어떤 모습으로 활동할까요?" },
-  { title: "데이트 코스", desc: "당신만의 코스를 들려주세요." },
-  { title: "거의 다 왔어요", desc: "마지막으로 확인할게요." },
+  { title: "기본 정보", desc: "이름·연락처·활동 지역만 알려주세요." },
+  { title: "거의 다 왔어요", desc: "어떤 활동을 하고 싶은지 한 줄이면 끝!" },
 ];
 const AF_REGIONS = [
   "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구",
@@ -22,9 +20,7 @@ type FormState = {
   contact: string;
   regions: string[];
   regionEtc: string;
-  intro: string;
-  course: string;
-  etc: string;
+  hobby: string;
   consent: boolean;
 };
 
@@ -47,7 +43,7 @@ export const ApplyFlow = () => {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
-  const [f, setF] = useState<FormState>({ name: "", contact: "", regions: [], regionEtc: "", intro: "", course: "", etc: "", consent: false });
+  const [f, setF] = useState<FormState>({ name: "", contact: "", regions: [], regionEtc: "", hobby: "", consent: false });
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
 
   useEffect(() => {
@@ -59,11 +55,10 @@ export const ApplyFlow = () => {
 
   if (!open) return null;
 
-  const valid: Array<() => boolean | string> = [
-    () => f.name.trim() !== "" && f.contact.trim() !== "",
-    () => f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== "") && f.intro.trim() !== "",
-    () => f.course.trim() !== "",
-    () => f.consent,
+  const last = AF_STEPS.length - 1;
+  const valid: Array<() => boolean> = [
+    () => f.name.trim() !== "" && f.contact.trim() !== "" && f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== ""),
+    () => f.hobby.trim() !== "" && f.consent,
   ];
   const canNext = Boolean(valid[step]());
   const close = () => setOpen(false);
@@ -87,7 +82,7 @@ export const ApplyFlow = () => {
     }
   };
   const next = () => {
-    if (step < 3) { track("apply_step", { step: step + 1 }); setStep(step + 1); }
+    if (step < last) { track("apply_step", { step: step + 1 }); setStep(step + 1); }
     else void submit();
   };
   const back = () => { if (step > 0) setStep(step - 1); };
@@ -118,7 +113,7 @@ export const ApplyFlow = () => {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: "var(--pink-hot)", letterSpacing: "0.04em", marginBottom: 8 }}>STEP {step + 1} / 4</div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: "var(--pink-hot)", letterSpacing: "0.04em", marginBottom: 8 }}>STEP {step + 1} / {AF_STEPS.length}</div>
               <h2 style={{ fontSize: 34, fontWeight: 900, letterSpacing: "-0.04em", color: "var(--ink)", lineHeight: 1.05, marginBottom: 8 }}>{AF_STEPS[step].title}</h2>
               <p style={{ fontSize: 15, fontWeight: 600, color: "var(--ink-soft)" }}>{AF_STEPS[step].desc}</p>
             </div>
@@ -130,12 +125,8 @@ export const ApplyFlow = () => {
                     <input className="af-input" value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="실명 또는 활동명" />
                   </AfField>
                   <AfField label="연락처" required hint="신청 결과를 안내할 핸드폰 번호예요.">
-                    <input className="af-input" value={f.contact} onChange={(e) => set("contact", e.target.value)} placeholder="010-0000-0000" />
+                    <input className="af-input" type="tel" inputMode="numeric" value={f.contact} onChange={(e) => set("contact", e.target.value)} placeholder="010-0000-0000" />
                   </AfField>
-                </>
-              )}
-              {step === 1 && (
-                <>
                   <AfField label="희망 활동 지역" required hint="여러 개 선택할 수 있어요.">
                     <div className="flex flex-wrap gap-2.5">
                       {AF_REGIONS.map((r) => (
@@ -146,20 +137,12 @@ export const ApplyFlow = () => {
                       <input className="af-input" style={{ marginTop: 12 }} value={f.regionEtc} onChange={(e) => set("regionEtc", e.target.value)} placeholder="활동 희망 지역을 직접 입력해주세요" autoFocus />
                     )}
                   </AfField>
-                  <AfField label="1줄 소개" required hint="게스트에게 보일 한 문장이에요.">
-                    <input className="af-input" value={f.intro} onChange={(e) => set("intro", e.target.value)} placeholder="예: 저랑 성수동에서 포켓몬 잡고 산책해요" />
-                  </AfField>
                 </>
               )}
-              {step === 2 && (
-                <AfField label="데이트 코스" required hint="어떤 장소를 어떻게 함께할지 자유롭게 적어주세요.">
-                  <textarea className="af-textarea" value={f.course} onChange={(e) => set("course", e.target.value)} placeholder={"예) 성수동 빈티지숍 세 곳을 돌고, 골목 안쪽 카페에서 커피 한 잔.\n2~3시간 정도, 천천히 걸으며 동네 이야기를 들려드려요."} />
-                </AfField>
-              )}
-              {step === 3 && (
+              {step === 1 && (
                 <>
-                  <AfField label="건의사항" hint="선택 사항이에요. 궁금한 점이나 하고 싶은 말을 자유롭게.">
-                    <textarea className="af-textarea" style={{ minHeight: 110 }} value={f.etc} onChange={(e) => set("etc", e.target.value)} placeholder="자유롭게 적어주세요 (선택)" />
+                  <AfField label="희망 취미" required hint="어디서 뭘 하고 싶은지 한 줄이면 충분해요.">
+                    <input className="af-input" value={f.hobby} onChange={(e) => set("hobby", e.target.value)} placeholder="예) 건대에서 방탈출 해요 · 서촌에서 댕댕런 뛰어요" />
                   </AfField>
                   <label style={{ display: "flex", gap: 12, alignItems: "flex-start", cursor: "pointer", padding: "16px", background: "var(--paper)", border: "2px solid var(--ink)", borderRadius: 12, marginTop: 6 }}>
                     <input type="checkbox" checked={f.consent} onChange={(e) => set("consent", e.target.checked)} style={{ width: 22, height: 22, marginTop: 1, accentColor: "var(--pink-hot)", flexShrink: 0 }} />
@@ -180,7 +163,7 @@ export const ApplyFlow = () => {
             <div className="flex items-center justify-between" style={{ marginTop: submitError ? 12 : 28, gap: 16 }}>
               {step > 0 ? <button className="af-backbtn" onClick={back} disabled={submitting}>← 이전</button> : <span />}
               <button className="af-nextbtn" onClick={next} disabled={!canNext || submitting}>
-                <span>{submitting ? "제출 중…" : step < 3 ? "다음" : "신청서 제출하기"}</span>
+                <span>{submitting ? "제출 중…" : step < last ? "다음" : "신청서 제출하기"}</span>
                 {!submitting && <span style={{ fontSize: 18 }}>→</span>}
               </button>
             </div>
