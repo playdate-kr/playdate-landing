@@ -56,6 +56,10 @@ export const ApplyFlow = () => {
     const ok = f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== "");
     if (ok) setStep((s) => Math.max(s, 3));
   }, [f.regions, f.regionEtc]);
+  // 연락처는 숫자 키패드라 완료(Return) 키가 없음 → 번호가 충분히 입력되면 자동으로 다음 노출
+  useEffect(() => {
+    if (f.contact.replace(/\D/g, "").length >= 10) setStep((s) => Math.max(s, 2));
+  }, [f.contact]);
 
   if (!open) return null;
 
@@ -122,7 +126,7 @@ export const ApplyFlow = () => {
 
               {showContact && (
                 <AfField label="연락처" required hint="신청 결과를 안내할 핸드폰 번호예요." reveal>
-                  <input className="af-input" type="tel" inputMode="numeric" value={f.contact} onChange={(e) => set("contact", e.target.value)} onBlur={() => { if (f.contact.trim()) setStep((s) => Math.max(s, 2)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }} placeholder="010-0000-0000" autoFocus />
+                  <input className="af-input" type="tel" inputMode="numeric" value={f.contact} onChange={(e) => { const v = e.target.value; set("contact", v); if (v.replace(/\D/g, "").length >= 11) e.target.blur(); }} onBlur={() => { if (f.contact.trim()) setStep((s) => Math.max(s, 2)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }} placeholder="010-0000-0000" autoFocus />
                 </AfField>
               )}
 
