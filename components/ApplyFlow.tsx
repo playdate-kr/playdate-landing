@@ -41,36 +41,25 @@ export const ApplyFlow = () => {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(false);
-  const [step, setStep] = useState(0);
   const [f, setF] = useState<FormState>(EMPTY);
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => setF((p) => ({ ...p, [k]: v }));
 
   useEffect(() => {
-    const h = () => { setOpen(true); setStep(0); setDone(false); setSubmitError(false); setF(EMPTY); track("apply_opened"); };
+    const h = () => { setOpen(true); setDone(false); setSubmitError(false); setF(EMPTY); track("apply_opened"); };
     window.addEventListener("open-apply", h);
     return () => window.removeEventListener("open-apply", h);
   }, []);
   useEffect(() => { document.body.style.overflow = open ? "hidden" : ""; }, [open]);
-  // 지역(칩) 선택은 '완료' 동작 — 유효해지면 다음 항목 노출
-  useEffect(() => {
-    const ok = f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== "");
-    if (ok) setStep((s) => Math.max(s, 3));
-  }, [f.regions, f.regionEtc]);
-  // 연락처는 숫자 키패드라 완료(Return) 키가 없음 → 번호가 충분히 입력되면 자동으로 다음 노출
-  useEffect(() => {
-    if (f.contact.replace(/\D/g, "").length >= 10) setStep((s) => Math.max(s, 2));
-  }, [f.contact]);
 
   if (!open) return null;
 
-  // 순차 노출: 각 항목을 '다 채우고 넘어갈 때'(입력칸 blur/엔터, 지역 선택) 다음이 열림.
-  // step은 한 번 열리면 유지(되돌아가 수정해도 항목이 사라지지 않음).
+  // 순차 노출: 한 항목에 값이 들어오면 바로 다음 항목이 나타남 (포커스는 그대로 두어 타이핑 끊기지 않음)
   const regionOk = f.regions.length > 0 && (!f.regions.includes("기타") || f.regionEtc.trim() !== "");
-  const showContact = step >= 1;
-  const showRegion = step >= 2;
-  const showHobby = step >= 3;
-  const showConsent = step >= 4;
-  const canSubmit = f.name.trim() !== "" && f.contact.trim() !== "" && regionOk && f.hobby.trim() !== "" && f.consent;
+  const showContact = f.name.trim() !== "";
+  const showRegion = showContact && f.contact.trim() !== "";
+  const showHobby = showRegion && regionOk;
+  const showConsent = showHobby && f.hobby.trim() !== "";
+  const canSubmit = showConsent && f.consent;
 
   const close = () => setOpen(false);
   const submit = async () => {
@@ -121,12 +110,12 @@ export const ApplyFlow = () => {
 
             <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
               <AfField label="이름" required>
-                <input className="af-input" value={f.name} onChange={(e) => set("name", e.target.value)} onBlur={() => { if (f.name.trim()) setStep((s) => Math.max(s, 1)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }} placeholder="실명 또는 활동명" autoFocus />
+                <input className="af-input" value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="실명 또는 활동명" autoFocus />
               </AfField>
 
               {showContact && (
                 <AfField label="연락처" required hint="신청 결과를 안내할 핸드폰 번호예요." reveal>
-                  <input className="af-input" type="tel" inputMode="numeric" value={f.contact} onChange={(e) => { const v = e.target.value; set("contact", v); if (v.replace(/\D/g, "").length >= 11) e.target.blur(); }} onBlur={() => { if (f.contact.trim()) setStep((s) => Math.max(s, 2)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }} placeholder="010-0000-0000" autoFocus />
+                  <input className="af-input" type="tel" inputMode="numeric" value={f.contact} onChange={(e) => set("contact", e.target.value)} placeholder="010-0000-0000" />
                 </AfField>
               )}
 
@@ -145,7 +134,7 @@ export const ApplyFlow = () => {
 
               {showHobby && (
                 <AfField label="희망 취미" required hint="어디서 뭘 하고 싶은지 한 줄이면 충분해요." reveal>
-                  <input className="af-input" value={f.hobby} onChange={(e) => set("hobby", e.target.value)} onBlur={() => { if (f.hobby.trim()) setStep((s) => Math.max(s, 4)); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.currentTarget.blur(); } }} placeholder="예) 건대에서 방탈출 해요 · 서촌에서 댕댕런 뛰어요" autoFocus />
+                  <input className="af-input" value={f.hobby} onChange={(e) => set("hobby", e.target.value)} placeholder="예) 건대에서 방탈출 해요 · 서촌에서 댕댕런 뛰어요" />
                 </AfField>
               )}
 
