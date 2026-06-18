@@ -30,7 +30,7 @@ export const MStickyCTA = () => {
   }, []);
   return (
     <Link href="/buddies" className="m-sticky" data-hidden={hidden} onClick={() => track("cta_click", { location: "sticky", page: "guest" })}>
-      <span>데이트 신청하기</span>
+      <span>플레이 신청하기</span>
       <span style={{ width: 26, height: 26, borderRadius: 999, background: "var(--ink)", color: "var(--pink)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 13 }}>→</span>
     </Link>
   );

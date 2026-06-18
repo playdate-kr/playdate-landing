@@ -18,7 +18,7 @@ export const GuestCTA = () => (
           className="cta"
           style={{ background: "var(--ink)", color: "var(--paper)", fontSize: 18, padding: "18px 30px 18px 32px", boxShadow: "8px 8px 0 var(--green-deep)" }}
         >
-          <span>데이트 신청하기</span>
+          <span>플레이 신청하기</span>
           <span className="arrow" style={{ background: "var(--pink-hot)", color: "var(--ink)", width: 36, height: 36, fontSize: 18 }}>→</span>
         </Link>
         <span style={{ fontSize: 14, fontWeight: 700, color: "var(--green-deep)" }}>약 30초 소요</span>
