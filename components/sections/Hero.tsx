@@ -111,7 +111,7 @@ export const Hero = () => (
       <div className="flex justify-between items-center gap-3 mb-8 md:mb-10">
         <img src="/brand/wordmark.png" alt="플레이데이트" className="h-6 md:h-7 w-auto shrink-0" />
         <div className="flex items-center gap-2.5 md:gap-4">
-          <Link href="/" className="text-[12px] md:text-[14px] font-bold whitespace-nowrap" style={{ color: "var(--ink-soft)" }}>게스트로 둘러보기 →</Link>
+          <Link href="/" className="text-[12px] md:text-[14px] font-bold whitespace-nowrap" style={{ color: "var(--ink-soft)" }}>플레이어로 참여하기 →</Link>
           <a
             href="#cta"
             onClick={(e) => { e.preventDefault(); track("cta_click", { location: "hero" }); window.dispatchEvent(new Event("open-apply")); }}
