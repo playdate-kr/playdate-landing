@@ -89,7 +89,7 @@ export const HowItWorks = () => (
   <Section label="03-how" bg="var(--bg-warm)">
     <div style={{ marginBottom: 20 }}><Kicker index="03" label="어떻게 진행되나요" /></div>
     <h2 style={{ fontSize: 64, fontWeight: 900, lineHeight: 0.98, letterSpacing: "-0.04em", color: "var(--ink)", marginBottom: 52 }}>
-      원하는 데이트와<br /><span style={{ color: "var(--green-deep)" }}>버디를 선택하세요.</span>
+      원하는 플레이와<br /><span style={{ color: "var(--green-deep)" }}>버디를 선택하세요.</span>
     </h2>
     <div className="how-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18, marginBottom: 80, alignItems: "stretch" }}>
       <HowStep n="1" title="하고 싶은 데이트를 적어요" chip={<ChipRequest />} />
