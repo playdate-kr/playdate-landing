@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Photo } from "@/components/Photo";
+import { BuddyGallery } from "@/components/guest/BuddyGallery";
 import { CourseApply, CourseApplyButton } from "@/components/guest/CourseApply";
 import { BUDDIES, getBuddy, coursesOf, reviewsOf, won } from "@/content/buddies";
 
@@ -39,25 +39,8 @@ export default async function BuddyDetailPage({ params }: { params: Promise<{ id
           <Link href="/buddies" className="ghost-link" style={{ fontSize: 14 }}>← 버디 목록</Link>
         </header>
 
-        {/* 갤러리 */}
-        <section style={{ paddingTop: 20 }}>
-          <Photo
-            src={b.photos[0]}
-            alt={`${b.name} 버디`}
-            objectPosition={b.pos}
-            priority
-            className="w-full"
-            style={{ aspectRatio: "4 / 5", maxWidth: 440, margin: "0 auto", borderRadius: 16, border: "2px solid var(--ink)", boxShadow: "6px 6px 0 var(--ink)" }}
-            sizes="(max-width: 768px) 90vw, 440px"
-          />
-          {b.photos.length > 1 && (
-            <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 14, flexWrap: "wrap" }}>
-              {b.photos.map((src, i) => (
-                <Photo key={i} src={src} alt={`${b.name} 사진 ${i + 1}`} objectPosition={b.pos} style={{ width: 72, height: 72, borderRadius: 10, border: "1.5px solid var(--ink)" }} sizes="72px" />
-              ))}
-            </div>
-          )}
-        </section>
+        {/* 갤러리 (썸네일 클릭 시 메인 교체) */}
+        <BuddyGallery photos={b.photos} pos={b.pos} name={b.name} />
 
         {/* 이름·평점·배지 */}
         <section style={{ paddingTop: 28, textAlign: "center" }}>
