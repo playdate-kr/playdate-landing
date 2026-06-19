@@ -10,6 +10,7 @@ type Body = {
   regions?: string[];
   regionEtc?: string;
   hobby?: string;
+  motivation?: string;
   consent?: boolean;
 };
 
@@ -39,9 +40,10 @@ export async function POST(req: Request) {
   const hasEtc = regions.includes("기타");
   const regionStr = regions.map((r) => (r === "기타" ? regionEtc || "기타" : r)).join(", ").slice(0, 300);
   const hobby = s(body.hobby, 4000);
+  const motivation = s(body.motivation, 4000);
 
   // 필수값 검증 (폼과 동일 기준)
-  if (!name || !contact || regions.length === 0 || (hasEtc && !regionEtc) || !hobby || body.consent !== true) {
+  if (!name || !contact || regions.length === 0 || (hasEtc && !regionEtc) || !hobby || !motivation || body.consent !== true) {
     return NextResponse.json({ ok: false, error: "invalid" }, { status: 400 });
   }
 
@@ -52,7 +54,7 @@ export async function POST(req: Request) {
     region_etc: hasEtc ? regionEtc || null : null,
     intro: hobby,
     course: "",
-    etc: null,
+    etc: motivation,
     consent: true,
   });
 
@@ -67,6 +69,7 @@ export async function POST(req: Request) {
     contact,
     region: regionStr,
     hobby,
+    motivation,
   });
 
   return NextResponse.json({ ok: true });
@@ -77,6 +80,7 @@ async function notifySlack(d: {
   contact: string;
   region: string;
   hobby: string;
+  motivation: string;
 }): Promise<string> {
   const url = process.env.SLACK_WEBHOOK_URL;
   if (!url) {
@@ -89,6 +93,7 @@ async function notifySlack(d: {
     `• 연락처: ${d.contact}`,
     `• 지역: ${d.region}`,
     `• 희망 취미: ${d.hobby}`,
+    `• 지원 동기: ${d.motivation}`,
   ];
   try {
     const res = await fetch(url, {

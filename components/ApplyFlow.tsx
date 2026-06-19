@@ -17,10 +17,11 @@ type FormState = {
   regions: string[];
   regionEtc: string;
   hobby: string;
+  motivation: string;
   consent: boolean;
 };
 
-const EMPTY: FormState = { name: "", contact: "", regions: [], regionEtc: "", hobby: "", consent: false };
+const EMPTY: FormState = { name: "", contact: "", regions: [], regionEtc: "", hobby: "", motivation: "", consent: false };
 
 const AfField = ({ label, required, hint, reveal, children }: {
   label: string;
@@ -58,7 +59,8 @@ export const ApplyFlow = () => {
   const showContact = f.name.trim() !== "";
   const showRegion = showContact && f.contact.trim() !== "";
   const showHobby = showRegion && regionOk;
-  const showConsent = showHobby && f.hobby.trim() !== "";
+  const showMotivation = showHobby && f.hobby.trim() !== "";
+  const showConsent = showMotivation && f.motivation.trim() !== "";
   const canSubmit = showConsent && f.consent;
 
   const close = () => setOpen(false);
@@ -135,6 +137,12 @@ export const ApplyFlow = () => {
               {showHobby && (
                 <AfField label="희망 취미" required hint="어디서 뭘 하고 싶은지 한 줄이면 충분해요." reveal>
                   <input className="af-input" value={f.hobby} onChange={(e) => set("hobby", e.target.value)} placeholder="예) 건대에서 방탈출 해요 · 서촌에서 댕댕런 뛰어요" />
+                </AfField>
+              )}
+
+              {showMotivation && (
+                <AfField label="버디 지원 동기" required hint="왜 버디로 활동하고 싶으신가요? 편하게 적어주세요." reveal>
+                  <textarea className="af-textarea" value={f.motivation} onChange={(e) => set("motivation", e.target.value)} placeholder="예) 사람 만나는 걸 좋아해서, 제 동네의 좋은 곳들을 함께 즐기고 싶어요" />
                 </AfField>
               )}
 
