@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
 import { COURSES } from "@/content/courses";
+import { CourseApply } from "@/components/guest/CourseApply";
 
 /* 줄바꿈(\n) 텍스트 → <br/> */
 const Multiline = ({ text }: { text: string }) =>
@@ -155,18 +156,25 @@ export default function CourseDetail() {
                   <div className="price"><b>{course.price}</b> 부터</div>
                   <div className="free">취소 수수료 없음</div>
                 </div>
-                <button className="cta">날짜 보기</button>
               </div>
-              <div className="slots">
-                {d.slots.map((s, i) => (
-                  <button key={i} className="slot"><div className="sl"><div className="sd">{s.date}</div><div className="stime">{s.time}</div></div><div className="sr">예약 가능</div></button>
-                ))}
+              <div style={{ background: "var(--bg-warm)", border: "1.5px solid var(--ink)", borderRadius: 12, padding: "14px 16px", margin: "2px 0 16px" }}>
+                <div style={{ fontWeight: 800, fontSize: 15, color: "var(--ink)", marginBottom: 4 }}>📅 날짜는 버디와 협의해요</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-soft)", lineHeight: 1.55 }}>신청하면 운영자가 24시간 안에 연락드리고, 가능한 날짜를 함께 맞춰요.</div>
               </div>
-              <div className="allslots">모든 날짜 표시</div>
+              <button
+                type="button"
+                className="cta"
+                style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
+              >
+                신청하기
+              </button>
             </div>
           </aside>
         </div>
       </div>
+
+      <CourseApply />
     </div>
   );
 }

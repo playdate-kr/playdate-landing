@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { getCourse, getBuddy } from "@/content/buddies";
+import { COURSES } from "@/content/courses";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   const contact = s(body.contact, 50);
   const courseId = s(body.courseId, 100);
   const memo = s(body.memo, 4000);
-  const course = getCourse(courseId);
+  const course = COURSES.find((c) => c.id === courseId);
 
   // 필수값 + course_id 유효성 검증
   if (!name || !contact || !course || body.adult !== true || body.consent !== true) {
@@ -55,11 +55,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "db_error" }, { status: 500 });
   }
 
-  const buddy = getBuddy(course.buddyId);
   await notifySlack({
     name,
     contact,
-    buddyName: buddy?.name ?? course.buddyId,
+    buddyName: course.buddy,
     courseTitle: course.title,
     memo,
   }).catch(() => {});

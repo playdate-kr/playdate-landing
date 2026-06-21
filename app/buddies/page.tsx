@@ -33,7 +33,8 @@ export default function BuddiesPage() {
         <main className="bc-grid">
           {COURSES.map((c) => {
             const [who, ...rest] = [c.buddy];
-            const conj = ["시드", "도키"].includes(c.buddy) ? "와 함께" : "과 함께";
+            const lastCode = c.buddy.charCodeAt(c.buddy.length - 1) - 0xac00;
+            const conj = lastCode >= 0 && lastCode <= 11171 && lastCode % 28 !== 0 ? "과 함께" : "와 함께";
             return (
               <Link key={c.id} href={`/buddies/${c.id}`} className="bc-course" data-accent={c.accent}>
                 <div className="bc-photo">
