@@ -21,6 +21,7 @@ export default function BuddiesPage() {
   return (
     <div className="bcat">
       <div className="bc-wrap">
+        <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 800, color: "var(--ink)", textDecoration: "none", padding: "4px 12px 4px 0" }}>← 뒤로</Link>
         <header className="bc-head">
           <div className="bc-kicker"><span className="idx">{CATALOG_HEAD.kicker}</span></div>
           <h1>
