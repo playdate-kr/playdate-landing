@@ -73,8 +73,8 @@ const DetailPanel = () => (
           <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--ink-soft)", whiteSpace: "nowrap" }}>3시간 · <span style={{ color: "var(--pink-hot)", fontWeight: 800 }}>8만원</span></span>
         </div>
       </div>
-      <Link href="/buddies/ian" className="cta" style={{ width: "100%", justifyContent: "center", fontSize: 15, padding: "13px 18px", boxShadow: "4px 4px 0 var(--ink)", marginTop: 12, boxSizing: "border-box" }}>
-        <span>이안 프로필 보기</span><span className="arrow" style={{ width: 26, height: 26, fontSize: 13 }}>→</span>
+      <Link href="/buddies/seongsu-pokemon" className="cta" style={{ width: "100%", justifyContent: "center", fontSize: 15, padding: "13px 18px", boxShadow: "4px 4px 0 var(--ink)", marginTop: 12, boxSizing: "border-box" }}>
+        <span>이안 코스 보기</span><span className="arrow" style={{ width: 26, height: 26, fontSize: 13 }}>→</span>
       </Link>
     </div>
   </div>
