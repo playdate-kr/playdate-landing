@@ -174,6 +174,21 @@ export default function CourseDetail() {
         </div>
       </div>
 
+      {/* 모바일 상시 하단 신청 바 */}
+      <div className="bd-mbar">
+        <div className="mb-price">
+          <div className="p1"><b>{course.price}</b> 부터</div>
+          <div className="p2">취소 수수료 없음 · 날짜는 협의</div>
+        </div>
+        <button
+          type="button"
+          className="mb-cta"
+          onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
+        >
+          신청하기
+        </button>
+      </div>
+
       <CourseApply />
     </div>
   );
