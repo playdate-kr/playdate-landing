@@ -174,19 +174,27 @@ export default function CourseDetail() {
         </div>
       </div>
 
-      {/* 모바일 상시 하단 신청 바 */}
+      {/* 모바일 상시 하단 신청 바 (설명 strip + 가격·CTA pill) */}
       <div className="bd-mbar">
-        <div className="mb-price">
-          <div className="p1"><b>{course.price}</b> 부터</div>
-          <div className="p2">취소 수수료 없음 · 날짜는 협의</div>
+        <div className="mb-note">
+          <div className="mb-note-txt">
+            <div className="t1">날짜는 버디와 협의해요</div>
+            <div className="t2">신청 후 운영자가 24시간 안에 연락드려요</div>
+          </div>
+          <svg className="mb-cal" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M3 9h18M8 2v4M16 2v4" />
+          </svg>
         </div>
-        <button
-          type="button"
-          className="mb-cta"
-          onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
-        >
-          신청하기
-        </button>
+        <div className="mb-pill">
+          <div className="mb-price"><b>{course.price}</b> 부터</div>
+          <button
+            type="button"
+            className="mb-cta"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
+          >
+            신청하기
+          </button>
+        </div>
       </div>
 
       <CourseApply />
