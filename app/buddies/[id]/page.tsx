@@ -10,6 +10,15 @@ import { CourseApply } from "@/components/guest/CourseApply";
 const Multiline = ({ text }: { text: string }) =>
   <>{text.split("\n").map((l, i) => <span key={i}>{i > 0 && <br />}{l}</span>)}</>;
 
+const ShareIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+  </svg>
+);
+
+const won = (c: { priceNum?: number; price: string }) =>
+  c.priceNum ? `${c.priceNum.toLocaleString()}원` : c.price;
+
 export default function CourseDetail() {
   const params = useParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -18,13 +27,22 @@ export default function CourseDetail() {
 
   if (!course) return notFound();
   const d = course.detail;
-  const conj = ["시드", "도키"].includes(course.buddy) ? "님" : "님";
+  const meta = [d.age, d.job, d.mbti, d.langs].filter(Boolean) as string[];
+  const others = COURSES.filter((c) => c.buddy === course.buddy && c.id !== course.id);
+
+  const openApply = () =>
+    window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }));
 
   return (
     <div className="bdetail">
       <nav className="bd-nav"><div className="in">
-        <Link href="/buddies"><img className="wm" src="/brand/wordmark.png" alt="플레이데이트" /></Link>
+        <Link className="nav-back" href="/buddies" aria-label="뒤로">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+        </Link>
+        <Link className="nav-wm" href="/buddies"><img className="wm" src="/brand/wordmark.png" alt="플레이데이트" /></Link>
+        <div className="nav-title">{course.title}</div>
         <div className="links"><Link href="/buddies">버디 둘러보기</Link><Link href="/">버디로 활동하기</Link></div>
+        <div className="nav-acts"><button type="button" className="iconbtn" aria-label="공유"><ShareIcon /></button></div>
       </div></nav>
 
       <div className="bd-page">
@@ -53,11 +71,10 @@ export default function CourseDetail() {
               {d.reviewCount > 0
                 ? <><span className="star">★</span> {d.rating} <span className="dot">·</span> <span>후기 {d.reviewCount}개</span></>
                 : <span className="mut">신규 코스</span>}
-              <span className="dot">·</span> <span className="mut">{course.region}</span> <span className="dot">·</span> <span className="mut">하루 친구 체험</span>
+              <span className="dot">·</span> <span className="mut">{course.region}</span>
             </div>
             <div className="acts">
-              <button className="iconbtn" aria-label="공유"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg></button>
-              <button className="iconbtn" aria-label="저장"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" /></svg></button>
+              <button type="button" className="iconbtn" aria-label="공유"><ShareIcon /></button>
             </div>
             <div className="inforow">
               <div className="av" style={{ backgroundImage: `url(${course.photo})` }} />
@@ -77,12 +94,45 @@ export default function CourseDetail() {
             <section className="bd-block">
               <h2>버디 소개</h2>
               <div className="bd-host">
-                <p className="hi">
-                  <b style={{ fontWeight: 900 }}>{course.buddy}</b> · 하루 친구 · <span style={{ color: "var(--bc-green-deep)", fontWeight: 800 }}>✓ 신원 확인 완료</span><br /><br />
-                  {d.intro}
-                </p>
-                <button className="bd-msgbtn">{course.buddy} {conj}에게 메시지 보내기</button>
+                <div className="host-top">
+                  <div className="host-photo" style={{ backgroundImage: `url(${course.photo})`, backgroundPosition: course.photoPos }} />
+                  <div className="host-nm">{course.buddy}</div>
+                  <div className="host-vf">✓ 신원 확인 완료</div>
+                  {meta.length > 0 && (
+                    <div className="host-line">
+                      {meta.map((v, i) => <span key={i}>{i > 0 && <span className="sep">·</span>}{v}</span>)}
+                    </div>
+                  )}
+                </div>
+
+                <p className="hi">{d.intro}</p>
+
+                {d.personalTags && d.personalTags.length > 0 && (
+                  <div className="host-tags">
+                    {d.personalTags.map((t, i) => <span key={i} className="ht"><span className="h">#</span>{t}</span>)}
+                  </div>
+                )}
+
+                <button type="button" className="bd-msgbtn">{course.buddy} 님에게 메시지 보내기</button>
                 <p className="safe">안전한 만남을 위해 항상 플레이데이트를 통해 소통하고 결제하세요.</p>
+
+                {others.length > 0 && (
+                  <div className="othercourses">
+                    <div className="oc-h">{course.buddy}의 다른 코스</div>
+                    <div className="oc-list">
+                      {others.map((o) => (
+                        <Link key={o.id} className="oc-card" href={`/buddies/${o.id}`}>
+                          <div className="oc-thumb" style={{ backgroundImage: `url(${o.photo})`, backgroundPosition: o.photoPos }} />
+                          <div className="oc-body">
+                            <div className="oc-name">{o.title}</div>
+                            <div className="oc-meta">{o.duration} · {o.region} · <span className="pr">{won(o)}</span></div>
+                          </div>
+                          <div className="oc-go">→</div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -92,28 +142,30 @@ export default function CourseDetail() {
               <div className="bd-steps">
                 {d.steps.map((s, i) => (
                   <div key={i} className="bd-step">
-                    <div className="ph" style={{ backgroundImage: `url(${s.src})`, backgroundPosition: s.pos }} />
+                    <div className="num">{i + 1}</div>
                     <div><div className="st">{s.title}</div><div className="sd">{s.desc}</div></div>
                   </div>
                 ))}
               </div>
-              <div className="bd-lang">한국어로 진행되는 하루 친구 체험이에요.</div>
             </section>
 
             {/* 후기 */}
             {d.reviews.length > 0 && (
               <section className="bd-block">
-                <div className="bd-rev-h"><span className="star">★</span> {d.rating} · 후기 {d.reviewCount}개</div>
+                <div className="bd-rev-h">버디 후기</div>
                 <div className="bd-reviews">
                   {d.reviews.map((r, i) => (
                     <div key={i} className="bd-review">
                       <div className="who"><span className="ra" style={{ background: r.color }}>{r.initial}</span><div><div className="rn">{r.name}</div><div className="rl">{r.loc}</div></div></div>
-                      <div className="rs"><span className="star">{r.stars}</span> · {r.when}</div>
+                      <div className="rs">
+                        {r.courseTag && <><span className="rtag">{r.courseTag}</span> · </>}
+                        {r.score && <><span className="score">★ {r.score}</span> · </>}
+                        {r.when}
+                      </div>
                       <p className="rt">{r.text}</p>
                     </div>
                   ))}
                 </div>
-                <button className="bd-allbtn">후기 {d.reviewCount}개 모두 보기</button>
               </section>
             )}
 
@@ -121,31 +173,23 @@ export default function CourseDetail() {
             <section className="bd-block bd-mapwrap">
               <h2>만나는 장소</h2>
               <div className="addr1">{d.meetSpot.name}</div>
-              <div className="addr2">{d.meetSpot.sub}</div>
-              <div className="bd-map">
-                <svg className="mpin" width="34" height="42" viewBox="0 0 34 42" fill="none"><path d="M17 41C17 41 32 25 32 16A15 15 0 1 0 2 16C2 25 17 41 17 41Z" fill="var(--bc-ink)" /><circle cx="17" cy="16" r="5.5" fill="#fff" /></svg>
-                <span className="mlbl">만나는 장소</span>
-              </div>
+              <div className="addr2">정확한 위치는 예약 확정 후 안내드려요</div>
             </section>
 
-            {/* 알아두어야 할 사항 */}
-            <section className="bd-block">
-              <h2>알아두어야 할 사항</h2>
-              <div className="bd-know">
-                <div className="k">
-                  <div className="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2" /><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" /><circle cx="17.5" cy="8.5" r="2.4" /><path d="M15.5 14.2c2.6.4 4.5 2.6 4.5 5.8" /></svg></div>
-                  <h4>게스트 필수조건</h4><p>만 19세 이상만 참여할 수 있어요. 현재는 1:1 만남만 운영해요.</p>
+            {/* 참여 전 알아두세요 */}
+            {d.knowNotes && d.knowNotes.length > 0 && (
+              <section className="bd-block">
+                <h2>참여 전 알아두세요</h2>
+                <div className="bd-knownote">
+                  {d.knowNotes.map((n, i) => (
+                    <div key={i} className="kn-item">
+                      <span className="kn-check"><svg width="13" height="13" viewBox="0 0 20 20" fill="none"><path d="M4 10.5 L8.5 15 L16 5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
+                      <span className="kn-tx">{n}</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="k">
-                  <div className="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.4 8 11 4.6-2.6 8-6 8-11V5z" /><path d="M9 12l2 2 4-4" /></svg></div>
-                  <h4>안전 수칙</h4><p>공개된 장소에서만 만나요. 신체 접촉은 없고, 사적 연락은 하지 않아요.</p>
-                </div>
-                <div className="k">
-                  <div className="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M3 9h18M8 2v4M16 2v4" /><path d="M9.5 15.5l5-3" /></svg></div>
-                  <h4>환불 정책</h4><p>시작 1일 전까지 취소하면 예약금이 전액 환불돼요.</p>
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
 
           {/* sticky booking */}
@@ -153,47 +197,31 @@ export default function CourseDetail() {
             <div className="bd-book">
               <div className="ptop">
                 <div>
-                  <div className="price"><b>{course.price}</b> 부터</div>
+                  <div className="price"><b>{won(course)}</b></div>
                   <div className="free">취소 수수료 없음</div>
                 </div>
               </div>
-              <div style={{ background: "var(--bg-warm)", border: "1.5px solid var(--ink)", borderRadius: 12, padding: "14px 16px", margin: "2px 0 16px" }}>
-                <div style={{ fontWeight: 800, fontSize: 15, color: "var(--ink)", marginBottom: 4 }}>📅 날짜는 버디와 협의해요</div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-soft)", lineHeight: 1.55 }}>신청하면 운영자가 24시간 안에 연락드리고, 가능한 날짜를 함께 맞춰요.</div>
+              <div className="negobox">
+                <div className="nt">시간은 버디와 협의해요</div>
+                <div className="nd">신청해주시면 매니저가 24시간 안에 연락드려요.</div>
               </div>
-              <button
-                type="button"
-                className="cta"
-                style={{ width: "100%", justifyContent: "center" }}
-                onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
-              >
-                신청하기
-              </button>
+              <button type="button" className="cta" style={{ width: "100%", justifyContent: "center" }} onClick={openApply}>신청하기</button>
             </div>
           </aside>
         </div>
       </div>
 
-      {/* 모바일 상시 하단 신청 바 (설명 strip + 가격·CTA pill) */}
+      {/* 모바일 상시 하단 신청 바 */}
       <div className="bd-mbar">
         <div className="mb-note">
           <div className="mb-note-txt">
-            <div className="t1">날짜는 버디와 협의해요</div>
-            <div className="t2">신청 후 운영자가 24시간 안에 연락드려요</div>
+            <div className="t1">시간은 버디와 협의해요</div>
+            <div className="t2">신청해주시면 매니저가 24시간 안에 연락드려요</div>
           </div>
-          <svg className="mb-cal" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="4" width="18" height="17" rx="2.5" /><path d="M3 9h18M8 2v4M16 2v4" />
-          </svg>
         </div>
         <div className="mb-pill">
-          <div className="mb-price"><b>{course.price}</b> 부터</div>
-          <button
-            type="button"
-            className="mb-cta"
-            onClick={() => window.dispatchEvent(new CustomEvent("open-request", { detail: { courseId: course.id, buddyName: course.buddy, courseTitle: course.title } }))}
-          >
-            신청하기
-          </button>
+          <div className="mb-price"><b>{won(course)}</b><span className="free">취소 수수료 없음</span></div>
+          <button type="button" className="mb-cta" onClick={openApply}>신청하기</button>
         </div>
       </div>
 

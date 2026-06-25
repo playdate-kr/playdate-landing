@@ -152,7 +152,7 @@ export function CourseApply() {
                 <Hint on={touched.phone && miss.phone} text="연락받을 번호를 적어주세요" />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                <label style={{ fontSize: 15, fontWeight: 800, color: "var(--ink)" }}>원하는 데이트 메모 <span style={{ color: "var(--ink-soft)", fontWeight: 600 }}>(선택)</span></label>
+                <label style={{ fontSize: 15, fontWeight: 800, color: "var(--ink)" }}>문의사항 <span style={{ color: "var(--ink-soft)", fontWeight: 600 }}>(선택)</span></label>
                 <textarea className="gb-textarea" value={f.memo} onChange={(e) => set("memo", e.target.value)} placeholder={"언제쯤 만나고 싶은지, 원하는 점이 있으면 자유롭게 적어주세요 :)\n예) 이번 주 토요일 오후가 좋아요"} />
               </div>
               <Check k="adult"><span style={{ whiteSpace: "nowrap" }}>만 19세 이상입니다 <span style={{ color: "var(--pink-hot)", fontWeight: 800 }}>*</span></span></Check>
@@ -172,7 +172,7 @@ export function CourseApply() {
               {!submitting && <span className="arrow" style={{ width: 28, height: 28, fontSize: 14 }}>→</span>}
             </button>
             {submitError && <p style={{ fontSize: 12.5, fontWeight: 700, color: "var(--pink-hot)", textAlign: "center", marginTop: 12 }}>제출에 실패했어요. 잠시 후 다시 시도해주세요.</p>}
-            {!canSubmit && !submitError && <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink-soft)", textAlign: "center", marginTop: 12 }}>필수 항목을 채우면 신청할 수 있어요</p>}
+            {!submitError && <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink-soft)", textAlign: "center", marginTop: 12 }}>매니저가 24시간 안에 문자로 연락드려요</p>}
           </>
         )}
       </div>

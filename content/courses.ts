@@ -5,7 +5,24 @@
  * - id 는 URL 경로가 됩니다 (/buddies/[id])
  * - accent: "green" | "pink" — 첫 태그 칩 색
  * - photo.pos: background-position (인물 얼굴 위치 보정)
+ * - priceNum: 숫자 가격(원). 상세/모바일바에서 toLocaleString()으로 "40,000원" 표기
+ * - detail.age/job/mbti/langs: 버디 소개 한 줄 메타
+ * - detail.personalTags: 버디 해시태그 칩
+ * - detail.knowNotes: "참여 전 알아두세요" 체크리스트(버디가 자유 입력)
+ * - reviews[].score("4.5") / courseTag(다른 코스 표시) — 실제 후기만 채우기
  */
+
+export type Review = {
+  initial: string;
+  color: string;
+  name: string;
+  loc: string;
+  when: string;
+  text: string;
+  score?: string;       // "4.5" — 별점 텍스트
+  courseTag?: string;   // "방탈출 참여" — 다른 코스 참여 표시(맨 앞 그린 태그)
+  stars?: string;       // (구) 별 문자열 — 미사용
+};
 
 export type Course = {
   id: string;
@@ -20,7 +37,8 @@ export type Course = {
   tags: string[];
   duration: string;     // "약 2시간"
   region: string;       // "성동구"
-  price: string;        // "4만원"
+  price: string;        // "4만원" (표시용 폴백)
+  priceNum?: number;    // 40000 — 콤마 표기용
   // 상세 페이지
   detail: {
     heroTitle: string;          // 상세 h1 (줄바꿈 \n)
@@ -29,9 +47,15 @@ export type Course = {
     reviewCount: number;        // 38
     gallery: { src: string; pos: string }[];
     intro: string;              // 버디 소개 본문
+    age?: string;               // "20대"
+    job?: string;               // "마케터"
+    mbti?: string;              // "ISTJ"
+    langs?: string;             // "한국어, 영어"
+    personalTags?: string[];    // ["포켓로그도감채우는중", ...]
+    knowNotes?: string[];       // "참여 전 알아두세요" 체크리스트
     meetSpot: { name: string; sub: string };
     steps: { src: string; pos: string; title: string; desc: string }[];
-    reviews: { initial: string; color: string; name: string; loc: string; stars: string; when: string; text: string }[];
+    reviews: Review[];
     slots: { date: string; time: string }[];
   };
 };
@@ -40,6 +64,18 @@ export const CATALOG_HEAD = {
   kicker: "PLAYDATE · 버디 카탈로그",
   title: ["오늘, 어떤 하루를", "보내볼까요?"],   // 2줄, 2번째 줄에 accent
   sub: "버디가 직접 꾸린 코스예요. 마음이 가는 하루를 골라 신청하면, 운영자가 24시간 안에 연락드려요.",
+};
+
+/** 이안 실제 후기 1건 (방탈출 참여 게스트) */
+const IAN_REVIEW: Review = {
+  initial: "이",
+  color: "#C99BD6",
+  name: "이*표",
+  loc: "서울",
+  when: "2026.06.14",
+  score: "4.5",
+  text:
+    "예전부터 방탈출 꼭 해보고 싶었는데, 주변에 같이 갈 지인도 없고 여러모로 기회가 없었어요. 근데 이번 기회 덕분에 너무 즐거운 시간 보내고 왔습니다. 처음 뵙는 분이라 낯설진 않을까 하는 염려와는 반대로 아이스브레이킹도 너무 잘 해주시고, 처음 하는 초보자에 맞는 레벨로 예약해주셔서 간단히(?) 클리어하고 올 수 있었어요. 시간 될때마다 종종 이용하고 싶어요 :)",
 };
 
 export const COURSES: Course[] = [
@@ -55,6 +91,7 @@ export const COURSES: Course[] = [
     duration: "약 2시간",
     region: "성동구",
     price: "4만원",
+    priceNum: 40000,
     detail: {
       heroTitle: "성수동 토박이와 함께하는\n포켓몬 골목 산책",
       lede: "성수동에서 10년 산 이안과 골목을 걸으며 포켓몬고 레이드를 돌고, 숨은 카페에서 쉬어가요.",
@@ -67,20 +104,25 @@ export const COURSES: Course[] = [
         { src: "/photos/ian.jpg", pos: "center 60%" },
       ],
       intro:
-        "안녕하세요, 성수동에서 10년 산 이안이에요. 포켓몬고 레이드부터 방탈출·코인노래방까지 — 같이 있으면 시간 가는 줄 모르는 하루를 만들어드려요. 낯가림 있으셔도 편하게 리드할게요 :)",
-      meetSpot: { name: "성수역 2호선 4번 출구 앞", sub: "서울 성동구 · 정확한 위치는 예약 확정 후 안내드려요" },
+        "안녕하세요, 플레이데이트의 메타몽 포지션을 맡고있는 버디 이안입니다👐 분위기를 휘어잡는 대담함은 없지만🥲 어느 텐션이든 맞춰서 같이 있는 사람들로 하여금 편안함을 줄 수 있는게 저의 장점이랍니다:) 즐거운 감정뿐만 아니라 누군가에게는 털어놓지 못 할 고민과 걱정도 나눠보세요!",
+      age: "20대",
+      job: "마케터",
+      mbti: "ISTJ",
+      langs: "한국어, 영어",
+      personalTags: ["포켓로그도감채우는중", "4세대입문", "닌텐도칩다수보유"],
+      knowNotes: [
+        "편한 운동화로 와주세요. 골목을 꽤 걸어요.",
+        "포켓몬고 앱은 미리 깔고 로그인해두시면 바로 시작할 수 있어요.",
+        "비 오는 날엔 실내 위주로 코스를 바꿔서 진행해요.",
+      ],
+      meetSpot: { name: "성수역 2호선 4번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [
         { src: "/photos/ian.jpg", pos: "center 22%", title: "성수역에서 만나요", desc: "편하게 인사하고, 오늘 어디를 돌지 함께 코스를 정해요." },
         { src: "/photos/ian-4.jpeg", pos: "center 18%", title: "골목을 걸으며 포켓몬 레이드", desc: "동네 토박이만 아는 스팟에서 레이드를 돌고 희귀 포켓몬도 잡아요." },
         { src: "/photos/ian-5.jpeg", pos: "center 30%", title: "숨은 골목 카페에서 쉬어가요", desc: "걷다가 분위기 좋은 카페에서 음료 한 잔 하며 한숨 돌려요." },
         { src: "/photos/ian.jpg", pos: "center 60%", title: "깔끔하게 마무리", desc: "정해진 시간이 끝나면 아쉽지만 인사하고 헤어져요." },
       ],
-      reviews: [
-        { initial: "ㅈ", color: "#8DB87A", name: "ㅈ**", loc: "성동구, 서울", stars: "★★★★★", when: "5일 전", text: "혼자선 못 갈 곳들을 편하게 다녔어요. 대화도 잘 통하고 시간 순삭! 성수 오면 또 신청할 거예요." },
-        { initial: "민", color: "#E8799F", name: "민**", loc: "마포구, 서울", stars: "★★★★★", when: "2026년 5월", text: "방탈출 호흡 진짜 잘 맞아요 ㅋㅋ 코노까지 완벽한 하루였습니다. 이안님 텐션 최고!" },
-        { initial: "수", color: "#6FA8C8", name: "수**", loc: "분당, 경기", stars: "★★★★★", when: "2026년 5월", text: "낯가림 심한 편인데 먼저 편하게 리드해주셔서 하나도 안 어색했어요. 골목 카페도 취향 저격." },
-        { initial: "유", color: "#C8A26F", name: "유**", loc: "인천", stars: "★★★★☆", when: "2026년 4월", text: "포켓몬 같이 잡는 게 이렇게 재밌을 줄이야! 다만 그날 비가 와서 코스를 좀 줄인 게 아쉬웠어요." },
-      ],
+      reviews: [{ ...IAN_REVIEW, courseTag: "방탈출 참여" }],
       slots: [
         { date: "6월 21일 (토)", time: "오후 2:00 ~ 4:00" },
         { date: "6월 22일 (일)", time: "오전 11:00 ~ 오후 1:00" },
@@ -91,88 +133,151 @@ export const COURSES: Course[] = [
   },
   {
     id: "seochon-latte", accent: "pink", buddy: "시드", title: "서촌 라떼 투어", blurb: "서촌 골목을 제일 잘 아는",
-    photo: "/photos/sid.jpg", photoPos: "center 22%", tags: ["라떼맛집", "수다", "서촌골목"], duration: "약 2시간", region: "종로구", price: "4만원",
+    photo: "/photos/sid.jpg", photoPos: "center 22%", tags: ["라떼맛집", "수다", "서촌골목"], duration: "약 2시간", region: "종로구", price: "4만원", priceNum: 40000,
     detail: { heroTitle: "서촌 골목을 제일 잘 아는\n시드와 라떼 투어", lede: "서촌 골목골목 숨은 카페를 함께 돌며 수다도 떨고 라떼도 즐겨요.", rating: "4.8", reviewCount: 52,
       gallery: [{ src: "/photos/sid.jpg", pos: "center 22%" }, { src: "/photos/sid.jpg", pos: "center 40%" }, { src: "/photos/sid.jpg", pos: "center 55%" }],
       intro: "안녕하세요, 커피 좋아하는 시드예요. 서촌 골목의 숨은 카페라면 자신 있어요. 편하게 수다 떨며 라떼 투어 함께해요 :)",
-      meetSpot: { name: "경복궁역 2번 출구 앞", sub: "서울 종로구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "에디터", mbti: "ENFP", langs: "한국어",
+      personalTags: ["라떼없으면못살아", "서촌골목20년차", "고민상담환영"],
+      knowNotes: [
+        "카페를 여러 곳 들러요. 편한 신발을 추천해요.",
+        "카페 음료값은 각자 부담이에요(투어비 별도).",
+        "비 오는 날엔 실내 카페 위주로 코스를 바꿔서 진행해요.",
+      ],
+      meetSpot: { name: "경복궁역 2번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/sid.jpg", pos: "center 22%", title: "경복궁역에서 만나요", desc: "가볍게 인사하고 오늘 코스를 정해요." }, { src: "/photos/sid.jpg", pos: "center 45%", title: "숨은 카페 라떼 투어", desc: "서촌 골목의 분위기 좋은 카페를 함께 돌아요." }, { src: "/photos/sid.jpg", pos: "center 60%", title: "깔끔하게 마무리", desc: "정해진 시간이 끝나면 아쉽지만 인사하고 헤어져요." }],
-      reviews: [{ initial: "하", color: "#8DB87A", name: "하**", loc: "종로구, 서울", stars: "★★★★★", when: "1주 전", text: "혼자 못 가던 카페들 다 가봤어요. 대화도 편하고 좋았습니다." }, { initial: "준", color: "#E8799F", name: "준**", loc: "은평구, 서울", stars: "★★★★★", when: "2026년 5월", text: "라떼 취향 저격 코스였어요. 시드님 추천 카페 다 좋았어요." }],
+      reviews: [],
       slots: [{ date: "6월 21일 (토)", time: "오후 1:00 ~ 3:00" }, { date: "6월 24일 (화)", time: "오후 3:00 ~ 5:00" }, { date: "6월 29일 (일)", time: "오전 11:00 ~ 오후 1:00" }] } },
   {
     id: "konkuk-escape", accent: "pink", buddy: "이안", title: "방탈출 + 코인노래방", blurb: "텐션 담당 버디가 이끄는",
-    photo: "/photos/ian-4.jpeg", photoPos: "center 18%", tags: ["방탈출", "코인노래방", "팀플레이"], duration: "약 3시간", region: "성동구", price: "6만원",
+    photo: "/photos/ian-4.jpeg", photoPos: "center 18%", tags: ["방탈출", "코인노래방", "팀플레이"], duration: "약 3시간", region: "광진구", price: "6만원", priceNum: 60000,
     detail: { heroTitle: "텐션 담당 버디와\n방탈출 + 코인노래방", lede: "난이도별 방탈출을 함께 깨고, 코인노래방에서 신나게 마무리해요.", rating: "4.9", reviewCount: 38,
       gallery: [{ src: "/photos/ian-4.jpeg", pos: "center 18%" }, { src: "/photos/ian.jpg", pos: "center 24%" }, { src: "/photos/ian-5.jpeg", pos: "center 30%" }],
-      intro: "포켓몬고 레이드부터 방탈출·코인노래방까지 — 같이 있으면 시간 가는 줄 모르는 하루를 만들어드려요. 낯가림 있으셔도 편하게 리드할게요 :)",
-      meetSpot: { name: "건대입구역 2번 출구 앞", sub: "서울 광진구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      intro: "안녕하세요, 플레이데이트의 메타몽 포지션을 맡고있는 버디 이안입니다👐 포켓몬고 레이드부터 방탈출·코인노래방까지 — 같이 있으면 시간 가는 줄 모르는 하루를 만들어드려요. 낯가림 있으셔도 편하게 리드할게요 :)",
+      age: "20대", job: "마케터", mbti: "ISTJ", langs: "한국어, 영어",
+      personalTags: ["포켓로그도감채우는중", "4세대입문", "닌텐도칩다수보유"],
+      knowNotes: [
+        "방탈출은 추리·소통이 중요해요. 부담 없이 의견을 던져주세요.",
+        "목을 많이 쓰니 코인노래방 전에 물 한 병 챙기면 좋아요.",
+        "원하는 난이도가 있으면 신청 메모에 적어주세요.",
+      ],
+      meetSpot: { name: "건대입구역 2번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/ian-4.jpeg", pos: "center 18%", title: "건대입구에서 만나요", desc: "가볍게 인사하고 난이도를 정해요." }, { src: "/photos/ian.jpg", pos: "center 24%", title: "방탈출 한 판", desc: "호흡 맞춰 방을 탈출해요." }, { src: "/photos/ian-5.jpeg", pos: "center 30%", title: "코인노래방 마무리", desc: "신나게 노래 부르며 마무리해요." }],
-      reviews: [{ initial: "민", color: "#E8799F", name: "민**", loc: "마포구, 서울", stars: "★★★★★", when: "2026년 5월", text: "방탈출 호흡 진짜 잘 맞아요 ㅋㅋ 코노까지 완벽한 하루였습니다." }],
+      reviews: [IAN_REVIEW],
       slots: [{ date: "6월 22일 (일)", time: "오후 2:00 ~ 5:00" }, { date: "6월 28일 (토)", time: "저녁 6:00 ~ 9:00" }] } },
   {
     id: "cherry-blossom", accent: "pink", isNew: true, buddy: "도키", title: "벚꽃 봄 산책 & 사진", blurb: "인생샷 찍어주는 신입 버디",
-    photo: "/photos/doki.jpg", photoPos: "center 22%", tags: ["사진", "벚꽃", "산책"], duration: "약 1.5시간", region: "강남구", price: "2만원",
+    photo: "/photos/doki.jpg", photoPos: "center 22%", tags: ["사진", "벚꽃", "산책"], duration: "약 1.5시간", region: "강남구", price: "2만원", priceNum: 20000,
     detail: { heroTitle: "인생샷 찍어주는 도키와\n벚꽃 봄 산책", lede: "벚꽃 명소를 함께 걸으며 인생샷을 남겨요.", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/doki.jpg", pos: "center 22%" }, { src: "/photos/doki.jpg", pos: "center 40%" }],
       intro: "사진 찍는 거 좋아하는 신입 버디 도키예요. 벚꽃 명소에서 인생샷 책임질게요!",
-      meetSpot: { name: "양재시민의숲 입구", sub: "서울 강남구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "사진작가", mbti: "ENFP", langs: "한국어",
+      personalTags: ["인생샷장인", "필름카메라수집", "노을헌터"],
+      knowNotes: [
+        "인생샷 찍어드려요. 원하는 컨셉이 있으면 미리 알려주세요.",
+        "야외 산책이라 날씨에 맞는 옷차림을 추천해요.",
+        "촬영 원본은 당일 현장에서 전달해드려요.",
+      ],
+      meetSpot: { name: "양재시민의숲 입구", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/doki.jpg", pos: "center 22%", title: "공원 입구에서 만나요", desc: "가볍게 인사하고 코스를 정해요." }, { src: "/photos/doki.jpg", pos: "center 45%", title: "벚꽃 산책 & 사진", desc: "벚꽃길을 걸으며 인생샷을 남겨요." }],
       reviews: [],
       slots: [{ date: "6월 21일 (토)", time: "오후 4:00 ~ 5:30" }, { date: "6월 23일 (월)", time: "오후 2:00 ~ 3:30" }] } },
   {
     id: "love-talk", accent: "pink", buddy: "시드", title: "연애 고민 상담 산책", blurb: "판단 없이 들어주는",
-    photo: "/photos/sid.jpg", photoPos: "center 52%", tags: ["연애상담", "산책", "한옥길"], duration: "약 2시간", region: "종로구", price: "4만 5천원",
+    photo: "/photos/sid.jpg", photoPos: "center 52%", tags: ["연애상담", "산책", "한옥길"], duration: "약 2시간", region: "종로구", price: "4만 5천원", priceNum: 45000,
     detail: { heroTitle: "판단 없이 들어주는\n시드와 고민 상담 산책", lede: "북촌 한옥길을 걸으며 편하게 연애 고민을 나눠요.", rating: "4.8", reviewCount: 52,
       gallery: [{ src: "/photos/sid.jpg", pos: "center 52%" }, { src: "/photos/sid.jpg", pos: "center 30%" }],
       intro: "잘 들어주는 게 장점인 시드예요. 판단 없이 편하게 고민 들어드릴게요.",
-      meetSpot: { name: "안국역 2번 출구 앞", sub: "서울 종로구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "에디터", mbti: "ENFP", langs: "한국어",
+      personalTags: ["라떼없으면못살아", "서촌골목20년차", "고민상담환영"],
+      knowNotes: [
+        "판단 없이 들어드려요. 편하게 이야기해주세요.",
+        "한옥길을 천천히 걸어요. 편한 신발이면 좋아요.",
+        "나누고 싶은 고민을 신청 메모에 미리 적어두셔도 좋아요.",
+      ],
+      meetSpot: { name: "안국역 2번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/sid.jpg", pos: "center 30%", title: "안국역에서 만나요", desc: "가볍게 인사하고 코스를 정해요." }, { src: "/photos/sid.jpg", pos: "center 52%", title: "한옥길 걸으며 상담", desc: "조용한 한옥길을 걸으며 편하게 이야기해요." }],
-      reviews: [{ initial: "하", color: "#8DB87A", name: "하**", loc: "종로구, 서울", stars: "★★★★★", when: "2주 전", text: "정말 편하게 들어주셔서 마음이 가벼워졌어요." }],
+      reviews: [],
       slots: [{ date: "6월 25일 (수)", time: "오후 5:00 ~ 7:00" }, { date: "6월 29일 (일)", time: "오후 2:00 ~ 4:00" }] } },
   {
     id: "hangang-bike", accent: "green", isNew: true, buddy: "도키", title: "한강 자전거 노을", blurb: "노을 명당 아는 신입 버디",
-    photo: "/photos/doki.jpg", photoPos: "center 40%", tags: ["자전거", "노을", "한강"], duration: "약 2시간", region: "강남구", price: "3만원",
+    photo: "/photos/doki.jpg", photoPos: "center 40%", tags: ["자전거", "노을", "한강"], duration: "약 2시간", region: "강남구", price: "3만원", priceNum: 30000,
     detail: { heroTitle: "노을 명당 아는 도키와\n한강 자전거 노을", lede: "한강을 자전거로 달리며 노을 명당에서 사진도 남겨요.", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/doki.jpg", pos: "center 40%" }, { src: "/photos/doki.jpg", pos: "center 25%" }],
       intro: "한강 노을 명당이라면 자신 있는 신입 버디 도키예요. 같이 달려요!",
-      meetSpot: { name: "잠원한강공원 자전거 대여소", sub: "서울 강남구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "사진작가", mbti: "ENFP", langs: "한국어",
+      personalTags: ["인생샷장인", "필름카메라수집", "노을헌터"],
+      knowNotes: [
+        "자전거 대여비는 각자 부담이에요(투어비 별도).",
+        "활동하기 편한 옷차림과 운동화로 와주세요.",
+        "노을 시간에 맞춰 시작하니 출발 시간을 꼭 지켜주세요.",
+      ],
+      meetSpot: { name: "잠원한강공원 자전거 대여소", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/doki.jpg", pos: "center 40%", title: "대여소에서 만나요", desc: "자전거를 빌리고 코스를 정해요." }, { src: "/photos/doki.jpg", pos: "center 25%", title: "노을 명당까지 라이딩", desc: "한강을 달려 노을 명당에서 사진을 남겨요." }],
       reviews: [],
       slots: [{ date: "6월 21일 (토)", time: "오후 6:00 ~ 8:00" }, { date: "6월 27일 (금)", time: "오후 6:30 ~ 8:30" }] } },
   {
     id: "gyeongbok-run", accent: "green", isNew: true, buddy: "쇼니", title: "경복궁 멍뭉런 + 숏폼 촬영", blurb: "같이 달릴 사람 여기 있어요",
-    photo: "/photos/shony-1.jpeg", photoPos: "center 25%", tags: ["러닝", "멍뭉런", "숏폼촬영"], duration: "약 1.5시간", region: "종로구", price: "3만원",
+    photo: "/photos/shony-1.jpeg", photoPos: "center 25%", tags: ["러닝", "멍뭉런", "숏폼촬영"], duration: "약 1.5시간", region: "종로구", price: "3만원", priceNum: 30000,
     detail: { heroTitle: "쇼니와 함께\n경복궁 멍뭉런 + 숏폼 촬영", lede: "혼자 뛰기 심심했다면, 같이 달릴 사람 여기 있어요. 러닝이 처음이어도 괜찮아요.", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/shony-1.jpeg", pos: "center 25%" }, { src: "/photos/shony-2.jpeg", pos: "center 25%" }, { src: "/photos/shony-3.jpeg", pos: "center 25%" }],
       intro: "혼자 뛰기 심심했다면, 같이 달릴 사람 여기 있어요 🏃 러닝이 처음이어도 괜찮아요. 숨차면 천천히, 힘나면 같이 더 멀리! 같이 뛰고, 이야기하고, 자연스럽게 친해져요.",
-      meetSpot: { name: "경복궁역 4번 출구 앞", sub: "서울 종로구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "러닝크루 리더", mbti: "ESFP", langs: "한국어",
+      personalTags: ["주3회러닝", "숏폼크리에이터", "러닝입문환영"],
+      knowNotes: [
+        "러닝화와 편한 운동복으로 와주세요.",
+        "러닝이 처음이어도 괜찮아요. 페이스는 함께 맞춰요.",
+        "숏폼 촬영 원본은 당일 보내드려요.",
+      ],
+      meetSpot: { name: "경복궁역 4번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/shony-1.jpeg", pos: "center 25%", title: "경복궁역에서 만나요", desc: "가볍게 인사하고 페이스를 맞춰요." }, { src: "/photos/shony-2.jpeg", pos: "center 25%", title: "멍뭉런으로 함께 달려요", desc: "경복궁 돌담길을 천천히 달리며 동네를 즐겨요." }, { src: "/photos/shony-3.jpeg", pos: "center 25%", title: "숏폼 촬영", desc: "달리는 모습을 숏폼으로 남겨드려요." }],
       reviews: [], slots: [] } },
   {
     id: "yeouido-run", accent: "green", isNew: true, buddy: "쇼니", title: "여의도 고구마런 + 숏폼 촬영", blurb: "한강에서 같이 달려요",
-    photo: "/photos/shony-5.jpeg", photoPos: "center 25%", tags: ["러닝", "한강", "숏폼촬영"], duration: "약 1.5시간", region: "영등포구", price: "3만원",
+    photo: "/photos/shony-5.jpeg", photoPos: "center 25%", tags: ["러닝", "한강", "숏폼촬영"], duration: "약 1.5시간", region: "영등포구", price: "3만원", priceNum: 30000,
     detail: { heroTitle: "쇼니와 함께\n여의도 고구마런 + 숏폼 촬영", lede: "여의도 한강을 따라 같이 달려요. 숨차면 천천히, 힘나면 더 멀리!", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/shony-5.jpeg", pos: "center 25%" }, { src: "/photos/shony-6.jpeg", pos: "center 25%" }, { src: "/photos/shony-4.jpeg", pos: "center 25%" }],
       intro: "혼자 뛰기 심심했다면, 같이 달릴 사람 여기 있어요 🏃 러닝이 처음이어도 괜찮아요. 숨차면 천천히, 힘나면 같이 더 멀리! 같이 뛰고, 이야기하고, 자연스럽게 친해져요.",
-      meetSpot: { name: "여의나루역 2번 출구 앞", sub: "서울 영등포구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      age: "20대", job: "러닝크루 리더", mbti: "ESFP", langs: "한국어",
+      personalTags: ["주3회러닝", "숏폼크리에이터", "러닝입문환영"],
+      knowNotes: [
+        "러닝화와 편한 운동복으로 와주세요.",
+        "러닝이 처음이어도 괜찮아요. 페이스는 함께 맞춰요.",
+        "숏폼 촬영 원본은 당일 보내드려요.",
+      ],
+      meetSpot: { name: "여의나루역 2번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/shony-5.jpeg", pos: "center 25%", title: "여의나루역에서 만나요", desc: "가볍게 인사하고 페이스를 맞춰요." }, { src: "/photos/shony-6.jpeg", pos: "center 25%", title: "한강 따라 고구마런", desc: "여의도 한강길을 달리며 노을도 즐겨요." }, { src: "/photos/shony-4.jpeg", pos: "center 25%", title: "숏폼 촬영", desc: "달리는 모습을 숏폼으로 남겨드려요." }],
       reviews: [], slots: [] } },
   {
     id: "mingky-escape", accent: "pink", isNew: true, buddy: "밍키", title: "강남·마포 방탈출 체험", blurb: "긍정에너지 가득 밍키와",
-    photo: "/photos/mingky-1.jpeg", photoPos: "center 22%", tags: ["방탈출", "ENTP", "프로N잡러"], duration: "약 3시간", region: "강남·마포", price: "8만원",
+    photo: "/photos/mingky-1.jpeg", photoPos: "center 22%", tags: ["방탈출", "ENTP", "프로N잡러"], duration: "약 3시간", region: "강남·마포", price: "8만원", priceNum: 80000,
     detail: { heroTitle: "밍키와 함께\n강남·마포 방탈출 체험", lede: "도전과 추진력 빼면 Zero인 밍키와 방탈출 한 판! 긍정에너지로 용기를 선물할게요.", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/mingky-1.jpeg", pos: "center 22%" }, { src: "/photos/mingky-2.jpeg", pos: "center 22%" }, { src: "/photos/mingky-3.jpeg", pos: "center 22%" }],
-      intro: "반가워요! 도전과 추진력 빼면 Zero인 밍키입니다 😉 제가 가진 긍정에너지로 여러분께 용기를 선물해줄게요 🤍 함께 특별하고 다채로운 하루를 보내보아요! #ENTP #페르소나ENFJ #프로N잡러 #새로운거최고 #호기심천국",
-      meetSpot: { name: "강남역 11번 출구 앞", sub: "서울 강남구·마포구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      intro: "반가워요! 도전과 추진력 빼면 Zero인 밍키입니다 😉 제가 가진 긍정에너지로 여러분께 용기를 선물해줄게요 🤍 함께 특별하고 다채로운 하루를 보내보아요!",
+      age: "20대", job: "프로N잡러", mbti: "ENTP", langs: "한국어",
+      personalTags: ["새로운거최고", "호기심천국", "도전중독"],
+      knowNotes: [
+        "방탈출은 함께 머리를 모으는 게 재미예요. 편하게 의견을 주세요.",
+        "활동하기 편한 복장을 추천해요.",
+        "원하는 난이도가 있으면 신청 메모에 적어주세요.",
+      ],
+      meetSpot: { name: "강남역 11번 출구 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/mingky-1.jpeg", pos: "center 22%", title: "강남/마포에서 만나요", desc: "가볍게 인사하고 난이도를 정해요." }, { src: "/photos/mingky-2.jpeg", pos: "center 22%", title: "방탈출 한 판", desc: "호흡 맞춰 신나게 방을 탈출해요." }, { src: "/photos/mingky-3.jpeg", pos: "center 22%", title: "깔끔하게 마무리", desc: "정해진 시간이 끝나면 아쉽지만 인사하고 헤어져요." }],
       reviews: [], slots: [] } },
   {
     id: "mingky-climbing", accent: "green", isNew: true, buddy: "밍키", title: "클라이밍 체험", blurb: "도전 좋아하는 밍키와",
-    photo: "/photos/mingky-2.jpeg", photoPos: "center 22%", tags: ["클라이밍", "도전", "호기심천국"], duration: "약 3시간", region: "강남구", price: "5만원",
+    photo: "/photos/mingky-2.jpeg", photoPos: "center 22%", tags: ["클라이밍", "도전", "호기심천국"], duration: "약 3시간", region: "강남구", price: "5만원", priceNum: 50000,
     detail: { heroTitle: "밍키와 함께\n클라이밍 체험", lede: "처음이어도 괜찮아요. 긍정에너지 가득한 밍키와 한 칸씩 올라가봐요!", rating: "신규", reviewCount: 0,
       gallery: [{ src: "/photos/mingky-2.jpeg", pos: "center 22%" }, { src: "/photos/mingky-3.jpeg", pos: "center 22%" }, { src: "/photos/mingky-1.jpeg", pos: "center 22%" }],
-      intro: "반가워요! 도전과 추진력 빼면 Zero인 밍키입니다 😉 제가 가진 긍정에너지로 여러분께 용기를 선물해줄게요 🤍 함께 특별하고 다채로운 하루를 보내보아요! #ENTP #페르소나ENFJ #프로N잡러 #새로운거최고 #호기심천국",
-      meetSpot: { name: "강남 클라이밍짐 앞", sub: "서울 강남구 · 정확한 위치는 예약 확정 후 안내드려요" },
+      intro: "반가워요! 도전과 추진력 빼면 Zero인 밍키입니다 😉 제가 가진 긍정에너지로 여러분께 용기를 선물해줄게요 🤍 함께 특별하고 다채로운 하루를 보내보아요!",
+      age: "20대", job: "프로N잡러", mbti: "ENTP", langs: "한국어",
+      personalTags: ["새로운거최고", "호기심천국", "도전중독"],
+      knowNotes: [
+        "클라이밍화는 현장에서 대여할 수 있어요(대여비 별도).",
+        "활동하기 편한 옷차림으로 와주세요. 긴 손톱은 미리 정리해주세요.",
+        "처음이어도 괜찮아요. 기본 동작부터 함께 배워요.",
+      ],
+      meetSpot: { name: "강남 클라이밍짐 앞", sub: "정확한 위치는 예약 확정 후 안내드려요" },
       steps: [{ src: "/photos/mingky-2.jpeg", pos: "center 22%", title: "클라이밍짐에서 만나요", desc: "장비를 챙기고 기본 동작을 배워요." }, { src: "/photos/mingky-3.jpeg", pos: "center 22%", title: "한 칸씩 올라가요", desc: "밍키와 함께 난이도별 벽에 도전해요." }, { src: "/photos/mingky-1.jpeg", pos: "center 22%", title: "깔끔하게 마무리", desc: "정해진 시간이 끝나면 아쉽지만 인사하고 헤어져요." }],
       reviews: [], slots: [] } },
 ];
